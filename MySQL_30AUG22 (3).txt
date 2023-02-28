@@ -1,0 +1,5315 @@
+roushansingh575@gmail.com;
+abhinavkatiyar123@gmail.com;
+######################################DAY-1####################################
+SET @@SQL_MODE='ONLY_FULL_GROUP_BY';
+
+SET FOREIGN_KEY_CHECKS=0; To disable foreign key temporarily
+*******************************************************************************
+EMP  --SCOTT(OWNER)			KRISHNA
+ |
+ --empno numeric(4) pk
+ --ename varchar(25) unique
+ --job varchar(12) not null
+
+EMPNO	ENAME		JOB
+7566	JONES		MANAGER
+
+Database designing steps:
+-------------------------
+1. Understand end-users requirement - Requirement Analysis
+  *What data user wants to store
+  *Which all users will be involved
+  *What is the role of those users.
+
+2. Conceptual data design
+  *Pictorial Representation
+
+3. Logical Database Design
+   *Pictorial Representation in more detail
+    -Entities, Attributes and Relationships
+  
+4. Normalization
+    -Schema Refinement
+
+5. Physical Database Design - creating tables
+
+6. Performance Tuning - Creating indexes
+
+COMPANY
+   |
+employees - regular entity
+   |
+   |--------Dependents - weak entity
+		* Father
+		* Mother
+		* Brothers
+		* Sisters
+		* Spouse
+
+
+Integrity Rules:
+----------------
+Entity Integrity Rule:
+----------------------
+ -Every row in a table must be unique
+ -This rule is enforced by defining Primary Key or UNIQUE constraint
+
+ *Primary Key Characteristics
+   -Does not allow duplicates
+   -Does not allow NULL (Not applicable/Not available)
+   -A table can have only one Primary Key
+
+ Ex: EMPNO of EMP is PK and DEPTNO of DEPT is PK.
+
+ *UNIQUE constraint characteristics
+   -Does not allow duplicates
+   -Allows NULLs
+
+Referential Integrity Rule
+---------------------------
+ -This rule states that values in a column(s) must match with values in another column(s)
+ -Enforced by defining Foriegn Key Constraint
+
+  *Foreign Key Characteristics
+    -Must contains values present in PARENT column(s)
+    -PARENT column(s) must be PK or UNIQUE
+    -Can contain NULL
+    -Allows duplicates
+
+  Ex: DEPTNO of EMP is FK with reference to DEPTNO of DEPT which is PK
+
+  *If FK and referred PARENT column are in same table it is called SELF-REFERENTIAL.
+
+  Ex: MGR is FK of EMP is FK with reference to EMPNO of same table.
+
+Deletion Rules:
+----------------
+-ON DELETE RESTRICT (default)
+  *You cannot delete a PARENT record for which CHILD record is present.
+
+-ON DELETE CASCADE
+  *When you delete PARENT record corresponding CHILD records would be also be deleted.
+
+-ON DELETE SET NULL
+  *When you delete PARENT record corresponding values in CHILD column would be SET to NULL.
+
+DOMAIN Integrity Rule:
+----------------------
+ -This rule states that values in a column must have specific datatype, optionally size and
+  must contain SET of VALUES or RANGE of VALUES.
+
+  GENDER - CHAR(1)  - M,F,O
+
+************************************************************************************************
+char ch;
+ch='\0';
+
+int x;
+
+
+SELECT empno,ename,job,sal,deptno
+FROM emp
+WHERE empno=7566;
+***********************************************************************************************
+Functional Dependency:
+----------------------
+ -Functional Dependency is relationship between columns within a table.
+ -To find the value of one attribute we should use the value of another attribute.
+
+Normalization:
+--------------
+What is Normalization?
+ -Normalization is a process decomposing a larger table structure into smaller and simpler ones.
+
+What is the purpose of Normalization?
+ -To remove redundancy
+ -To remove DML anomolies.
+
+What is redundancy?
+ -unecessary repetition
+
+What is the problem with redundancy?
+ -Wastage of storage space (HDD/SSD)
+
+
+Earlier:
+--------
+10MB HDD - 5.25"
+..
+20MB HDD - 5.25"
+..
+120MB HDD - 3.5"
+...
+...
+4TB HDD - 3.5"
+...
+
+EMP
+---
+ 33000 employees in dept 10
+ 33000 employees in dept 20
+ 34000 employees in dept 30
+
+Types of Normal Forms:
+-----------------------
+1NF -
+2NF -
+3NF -
+BCNF -
+4NF
+5NF
+..
+
+-Most of the tables do get normalized by end of 3NF.
+
+**********************************************
+Normalization Example:
+----------------------
+BRANCH - branch_id(PK), branch_name, duration
+
+SUBJECT - subject_id(PK),subject_name
+
+JOB - job_id(PK),job_title
+
+STAFF - staff_id(PK),staff_name, staff_address, dateofjoin, staff_experience, salary, job_id(FK),
+	branch_id(FK)
+
+STUDENT - stud_id(PK), stud_fname, stud_lname, stud_address, stud_dob,percentage, admission_date,
+	  branch_id(FK)
+
+BRANCH_SUBECT - [branch_id(FK),subject_id(FK)] - [PK]
+
+STAFF_SUBECT - [staff_id(FK),subject_id(FK)] - [PK]
+*************************************************************************************************
+SQL - Structured Query Language - SEQUEL
+-----------------------------------------
+-It is a standard language used to manage almost any RDBMS.
+-SQL was developed by IBM.
+-SQL is based on Dr. E F Codd's relational database model.
+-SQL provides many commands which are grouped based on their functionality.
+
+DQL - Data Query Language
+-------------------------
+SELECT : To fetch data from database tables
+
+DDL - Data Definition Language
+-------------------------------
+CREATE   : To create new database object.
+ALTER    : To modify structure of existing database object
+DROP     : To remove the database object from database
+TRUNCATE : To remove all the rows permanently from the table
+
+DML - Data Manipulation Language
+---------------------------------
+INSERT	 : To add new rows into a table
+UPDATE   : To modifying existing data in the table
+DELETE   : To remove all/unwanted data from the table
+MERGE    : To perform INSERT/UPDATE/DELETE with single statement
+
+TCL - Transaction Control Language
+----------------------------------
+COMMIT	  : To save all changes permanently into database made in the transaction
+ROLLBACK  : To undo changes made in the transaction
+SAVEPOINT : To divide a transaction so that you can perform partial ROLLBACK
+
+DCL - Data Control Language
+---------------------------
+GRANT 	 : To give access permissions to other users on the objects you own
+REVOKE	 : To cancel access privileges granted earlier.
+***********************************************************************
+What is the difference between TRUNCATE & DELETE?
+
+TRUNCATE TABLE emp;
+  --or--
+DELETE FROM emp;
+COMMIT;
+
+TRUNCATE will flush data pages and resets High Water Mark Level to Beginning of file.
+
+DELETE will mark rows as deleted. Space will be reclaimed later when required.
+##########################################DAY-2################################################
+DQL - Data Query Language:
+--------------------------
+SELECT - Used to fetch data from database tables
+
+Syntax:
+-------
+SELECT <columns>
+FROM <tables>
+WHERE <clause>
+GROUP BY <clause>
+HAVING <clause>
+ORDER BY <clause>;
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| v2soft             |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> CREATE DATABASE company;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> USE company;
+Database changed
+mysql> SHOW tables;
+Empty set (0.00 sec)
+
+mysql> source c:\Material\Mysql\mysqldemotables
+ERROR:
+Failed to open file 'c:\Material\Mysql\mysqldemotables', error: 2
+mysql> source c:\Material\Mysql\mysqldemotables.sql
+Query OK, 0 rows affected, 1 warning (0.37 sec)
+
+Query OK, 0 rows affected (0.24 sec)
+
+Query OK, 1 row affected (0.07 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.05 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 0 rows affected (0.36 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Query OK, 1 row affected (0.06 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+Query OK, 14 rows affected (0.67 sec)
+Records: 14  Duplicates: 0  Warnings: 0
+
+Query OK, 0 rows affected (0.23 sec)
+
+Query OK, 1 row affected (0.03 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show tables;
++-------------------+
+| Tables_in_company |
++-------------------+
+| dept              |
+| emp               |
+| salgrade          |
++-------------------+
+3 rows in set (0.00 sec)
+
+mysql> DESC dept
+    -> ;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| deptno | tinyint(4)  | NO   | PRI | NULL    |       |
+| dname  | varchar(12) | YES  | MUL | NULL    |       |
+| loc    | varchar(11) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.07 sec)
+
+mysql> DESC emp;
++----------+------------------+------+-----+---------+-------+
+| Field    | Type             | Null | Key | Default | Extra |
++----------+------------------+------+-----+---------+-------+
+| empno    | int(10) unsigned | NO   | PRI | NULL    |       |
+| ename    | varchar(10)      | YES  |     | NULL    |       |
+| job      | varchar(12)      | YES  |     | NULL    |       |
+| mgr      | int(10) unsigned | YES  | MUL | NULL    |       |
+| hiredate | date             | YES  |     | NULL    |       |
+| sal      | float(9,2)       | YES  |     | NULL    |       |
+| comm     | float(7,2)       | YES  |     | NULL    |       |
+| deptno   | tinyint(4)       | YES  | MUL | NULL    |       |
++----------+------------------+------+-----+---------+-------+
+8 rows in set (0.11 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT deptno FROM emp;
++--------+
+| deptno |
++--------+
+|     10 |
+|     10 |
+|     10 |
+|     20 |
+|     20 |
+|     20 |
+|     20 |
+|     20 |
+|     30 |
+|     30 |
+|     30 |
+|     30 |
+|     30 |
+|     30 |
++--------+
+14 rows in set (0.00 sec)
+
+DISTINCT clause: Used to avoid duplicates from being displayed
+----------------
+mysql> SELECT DISTINCT deptno FROM emp;
++--------+
+| deptno |
++--------+
+|     10 |
+|     20 |
+|     30 |
++--------+
+3 rows in set (0.05 sec)
+
+mysql> SELECT deptno,DISTINCT job FROM emp;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DISTINCT job FROM emp' at line 1
+
+mysql> SELECT DISTINCT deptno,job FROM emp;
++--------+-----------+
+| deptno | job       |
++--------+-----------+
+|     20 | CLERK     |
+|     30 | SALESMAN  |
+|     20 | MANAGER   |
+|     30 | MANAGER   |
+|     10 | MANAGER   |
+|     20 | ANALYST   |
+|     10 | PRESIDENT |
+|     30 | CLERK     |
+|     10 | CLERK     |
++--------+-----------+
+9 rows in set (0.06 sec)
+*************************************************
+Performing Arithmetic Operations:
+---------------------------------
+Ex: To fetch annual salary of all the employees
+
+mysql> SELECT empno,ename,job,sal,sal*12 FROM emp;
++-------+--------+-----------+---------+----------+
+| empno | ename  | job       | sal     | sal*12   |
++-------+--------+-----------+---------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |  9600.00 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 | 19200.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 | 15000.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 | 35700.00 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 15000.00 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 | 34200.00 |
+|  7782 | CLARK  | MANAGER   | 2450.00 | 29400.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 | 36000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 | 60000.00 |
+|  7844 | TURNER | SALESMAN  | 1500.00 | 18000.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 | 13200.00 |
+|  7900 | JAMES  | CLERK     |  950.00 | 11400.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 | 36000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 | 15600.00 |
++-------+--------+-----------+---------+----------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+-Let us include COMM while computing annual salary
+
+mysql> SELECT empno,ename,job,sal,comm,sal*12+comm FROM emp;
++-------+--------+-----------+---------+---------+-------------+
+| empno | ename  | job       | sal     | comm    | sal*12+comm |
++-------+--------+-----------+---------+---------+-------------+
+|  7369 | SMITH  | CLERK     |  800.00 |    NULL |        NULL |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |  300.00 |    19500.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |  500.00 |    15500.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |    NULL |        NULL |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 1400.00 |    16400.00 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |    NULL |        NULL |
+|  7782 | CLARK  | MANAGER   | 2450.00 |    NULL |        NULL |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |    NULL |        NULL |
+|  7839 | KING   | PRESIDENT | 5000.00 |    NULL |        NULL |
+|  7844 | TURNER | SALESMAN  | 1500.00 |    0.00 |    18000.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |    NULL |        NULL |
+|  7900 | JAMES  | CLERK     |  950.00 |    NULL |        NULL |
+|  7902 | FORD   | ANALYST   | 3000.00 |    NULL |        NULL |
+|  7934 | MILLER | CLERK     | 1300.00 |    NULL |        NULL |
++-------+--------+-----------+---------+---------+-------------+
+14 rows in set (0.00 sec)
+
+-If any arithmetic expression includes NULL, it returns NULL itself
+
+Handling NULLs:
+---------------
+IFNULL()
+--------
+mysql> SELECT empno,ename,job,sal,comm,sal*12+IFNULL(comm,0) FROM emp;
++-------+--------+-----------+---------+---------+-----------------------+
+| empno | ename  | job       | sal     | comm    | sal*12+IFNULL(comm,0) |
++-------+--------+-----------+---------+---------+-----------------------+
+|  7369 | SMITH  | CLERK     |  800.00 |    NULL |               9600.00 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |  300.00 |              19500.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |  500.00 |              15500.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |    NULL |              35700.00 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 1400.00 |              16400.00 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |    NULL |              34200.00 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |    NULL |              29400.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |    NULL |              36000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |    NULL |              60000.00 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |    0.00 |              18000.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |    NULL |              13200.00 |
+|  7900 | JAMES  | CLERK     |  950.00 |    NULL |              11400.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 |    NULL |              36000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |    NULL |              15600.00 |
++-------+--------+-----------+---------+---------+-----------------------+
+14 rows in set (0.00 sec)
+
+IF(<condition>,<returns value for true>,<returns value for false>)
+-------------------------------------------------------------------
+mysql> SELECT empno,ename,job,sal,comm,sal*12+IF(comm IS NULL,0,comm) FROM emp;
++-------+--------+-----------+---------+---------+--------------------------------+
+| empno | ename  | job       | sal     | comm    | sal*12+IF(comm IS NULL,0,comm) |
++-------+--------+-----------+---------+---------+--------------------------------+
+|  7369 | SMITH  | CLERK     |  800.00 |    NULL |                        9600.00 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |  300.00 |                       19500.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |  500.00 |                       15500.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |    NULL |                       35700.00 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 1400.00 |                       16400.00 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |    NULL |                       34200.00 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |    NULL |                       29400.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |    NULL |                       36000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |    NULL |                       60000.00 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |    0.00 |                       18000.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |    NULL |                       13200.00 |
+|  7900 | JAMES  | CLERK     |  950.00 |    NULL |                       11400.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 |    NULL |                       36000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |    NULL |                       15600.00 |
++-------+--------+-----------+---------+---------+--------------------------------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,comm,IF(comm=0,'Lazy Chap',comm) FROM emp;
++-------+--------+-----------+---------+---------+-----------------------------+
+| empno | ename  | job       | sal     | comm    | IF(comm=0,'Lazy Chap',comm) |
++-------+--------+-----------+---------+---------+-----------------------------+
+|  7369 | SMITH  | CLERK     |  800.00 |    NULL | NULL                        |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |  300.00 | 300.00                      |
+|  7521 | WARD   | SALESMAN  | 1250.00 |  500.00 | 500.00                      |
+|  7566 | JONES  | MANAGER   | 2975.00 |    NULL | NULL                        |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 1400.00 | 1400.00                     |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |    NULL | NULL                        |
+|  7782 | CLARK  | MANAGER   | 2450.00 |    NULL | NULL                        |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |    NULL | NULL                        |
+|  7839 | KING   | PRESIDENT | 5000.00 |    NULL | NULL                        |
+|  7844 | TURNER | SALESMAN  | 1500.00 |    0.00 | Lazy Chap                   |
+|  7876 | ADAMS  | CLERK     | 1100.00 |    NULL | NULL                        |
+|  7900 | JAMES  | CLERK     |  950.00 |    NULL | NULL                        |
+|  7902 | FORD   | ANALYST   | 3000.00 |    NULL | NULL                        |
+|  7934 | MILLER | CLERK     | 1300.00 |    NULL | NULL                        |
++-------+--------+-----------+---------+---------+-----------------------------+
+14 rows in set (0.00 sec)
+
+COALESCE(): Supported across all RDBMS
+---------------------------------------
+mysql> SELECT empno,ename,job,sal,comm,sal*12+COALESCE(comm,0) FROM emp;
++-------+--------+-----------+---------+---------+-------------------------+
+| empno | ename  | job       | sal     | comm    | sal*12+COALESCE(comm,0) |
++-------+--------+-----------+---------+---------+-------------------------+
+|  7369 | SMITH  | CLERK     |  800.00 |    NULL |                 9600.00 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |  300.00 |                19500.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |  500.00 |                15500.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |    NULL |                35700.00 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | 1400.00 |                16400.00 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |    NULL |                34200.00 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |    NULL |                29400.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |    NULL |                36000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |    NULL |                60000.00 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |    0.00 |                18000.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |    NULL |                13200.00 |
+|  7900 | JAMES  | CLERK     |  950.00 |    NULL |                11400.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 |    NULL |                36000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |    NULL |                15600.00 |
++-------+--------+-----------+---------+---------+-------------------------+
+14 rows in set (0.00 sec)
+
+-COALSCE() accepts more than 2 arguments
+
+mysql> SELECT empno,sal,mgr,comm,COALESCE(comm,mgr,sal,empno,1000) FROM emp;
++-------+---------+------+---------+-----------------------------------+
+| empno | sal     | mgr  | comm    | COALESCE(comm,mgr,sal,empno,1000) |
++-------+---------+------+---------+-----------------------------------+
+|  7369 |  800.00 | 7902 |    NULL |                           7902.00 |
+|  7499 | 1600.00 | 7698 |  300.00 |                            300.00 |
+|  7521 | 1250.00 | 7698 |  500.00 |                            500.00 |
+|  7566 | 2975.00 | 7839 |    NULL |                           7839.00 |
+|  7654 | 1250.00 | 7698 | 1400.00 |                           1400.00 |
+|  7698 | 2850.00 | 7839 |    NULL |                           7839.00 |
+|  7782 | 2450.00 | 7839 |    NULL |                           7839.00 |
+|  7788 | 3000.00 | 7566 |    NULL |                           7566.00 |
+|  7839 | 5000.00 | NULL |    NULL |                           5000.00 |
+|  7844 | 1500.00 | 7698 |    0.00 |                              0.00 |
+|  7876 | 1100.00 | 7788 |    NULL |                           7788.00 |
+|  7900 |  950.00 | 7698 |    NULL |                           7698.00 |
+|  7902 | 3000.00 | 7566 |    NULL |                           7566.00 |
+|  7934 | 1300.00 | 7782 |    NULL |                           7782.00 |
++-------+---------+------+---------+-----------------------------------+
+
+Alias/Alternate Column Headings
+-------------------------------
+-Alias headings can be used in ORDER BY clause and not any other clauses within the statement.
+
+mysql> SELECT empno as EmployeeNo,
+    ->        ename Empname,
+    ->        job "Job Title",
+    ->        sal Salary,
+    ->        deptno dno
+    -> FROM emp;
++------------+---------+-----------+---------+------+
+| EmployeeNo | Empname | Job Title | Salary  | dno  |
++------------+---------+-----------+---------+------+
+|       7369 | SMITH   | CLERK     |  800.00 |   20 |
+|       7499 | ALLEN   | SALESMAN  | 1600.00 |   30 |
+|       7521 | WARD    | SALESMAN  | 1250.00 |   30 |
+|       7566 | JONES   | MANAGER   | 2975.00 |   20 |
+|       7654 | MARTIN  | SALESMAN  | 1250.00 |   30 |
+|       7698 | BLAKE   | MANAGER   | 2850.00 |   30 |
+|       7782 | CLARK   | MANAGER   | 2450.00 |   10 |
+|       7788 | SCOTT   | ANALYST   | 3000.00 |   20 |
+|       7839 | KING    | PRESIDENT | 5000.00 |   10 |
+|       7844 | TURNER  | SALESMAN  | 1500.00 |   30 |
+|       7876 | ADAMS   | CLERK     | 1100.00 |   20 |
+|       7900 | JAMES   | CLERK     |  950.00 |   30 |
+|       7902 | FORD    | ANALYST   | 3000.00 |   20 |
+|       7934 | MILLER  | CLERK     | 1300.00 |   10 |
++------------+---------+-----------+---------+------+
+14 rows in set (0.00 sec)
+****************************************************************
+Sorting data: ORDER BY clause
+------------------------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY sal;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY sal ASC;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY sal DESC;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+-Using ALIAS name in ORDER BY clause
+
+mysql> SELECT empno,ename,job,sal Salary,deptno
+    -> FROM emp
+    -> ORDER BY Salary;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | Salary  | deptno |
++-------+--------+-----------+---------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+-Using column number in ORDER BY clause
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY 4;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
++-------+--------+-----------+---------+--------+
+14 rows in set (0.00 sec)
+
+-Sorting on multiple columns
+-Will be useful when you have duplicate/repeated data in leading column
+
+mysql> SELECT deptno,sal,ename
+    -> FROM emp
+    -> ORDER BY deptno,sal;
++--------+---------+--------+
+| deptno | sal     | ename  |
++--------+---------+--------+
+|     10 | 1300.00 | MILLER |
+|     10 | 2450.00 | CLARK  |
+|     10 | 5000.00 | KING   |
+|     20 |  800.00 | SMITH  |
+|     20 | 1100.00 | ADAMS  |
+|     20 | 2975.00 | JONES  |
+|     20 | 3000.00 | SCOTT  |
+|     20 | 3000.00 | FORD   |
+|     30 |  950.00 | JAMES  |
+|     30 | 1250.00 | MARTIN |
+|     30 | 1250.00 | WARD   |
+|     30 | 1500.00 | TURNER |
+|     30 | 1600.00 | ALLEN  |
+|     30 | 2850.00 | BLAKE  |
++--------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT deptno,sal,ename
+    -> FROM emp
+    -> ORDER BY deptno DESC,sal DESC;
++--------+---------+--------+
+| deptno | sal     | ename  |
++--------+---------+--------+
+|     30 | 2850.00 | BLAKE  |
+|     30 | 1600.00 | ALLEN  |
+|     30 | 1500.00 | TURNER |
+|     30 | 1250.00 | MARTIN |
+|     30 | 1250.00 | WARD   |
+|     30 |  950.00 | JAMES  |
+|     20 | 3000.00 | FORD   |
+|     20 | 3000.00 | SCOTT  |
+|     20 | 2975.00 | JONES  |
+|     20 | 1100.00 | ADAMS  |
+|     20 |  800.00 | SMITH  |
+|     10 | 5000.00 | KING   |
+|     10 | 2450.00 | CLARK  |
+|     10 | 1300.00 | MILLER |
++--------+---------+--------+
+14 rows in set (0.00 sec)
+*****************************************************************************
+Searching/Restricting rows: WHERE clause
+-----------------------------------------
+Comparison Operators:
+---------------------
+=  	: equal to
+!= , <> : not equal to
+< 	: less than
+<= 	: less than or equal to
+> 	: greater than
+>= 	: greater than or equal to
+
+Logical Operators:
+------------------
+NOT, AND, OR
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE deptno=10;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+3 rows in set (0.07 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal >= 2500;
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE ename='miller';
++-------+--------+-------+---------+--------+
+| empno | ename  | job   | sal     | deptno |
++-------+--------+-------+---------+--------+
+|  7934 | MILLER | CLERK | 1300.00 |     10 |
++-------+--------+-------+---------+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE ename='MILLER';
++-------+--------+-------+---------+--------+
+| empno | ename  | job   | sal     | deptno |
++-------+--------+-------+---------+--------+
+|  7934 | MILLER | CLERK | 1300.00 |     10 |
++-------+--------+-------+---------+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='1981-12-03';
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7900 | JAMES | 1981-12-03 |
+|  7902 | FORD  | 1981-12-03 |
++-------+-------+------------+
+2 rows in set (0.02 sec)
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='03-12-1981';
+Empty set, 1 warning (0.05 sec)
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='03-DEC-1981';  --Supported in other RDBMS(Oracle,MS-SQL Server,PostgreSQL)
+Empty set, 1 warning (0.00 sec)
+*****************************************************
+-Write a query to list employees who are working as MANAGER and earning salary greater than 2500.
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE job='MANAGER' AND sal > 2500;
++-------+-------+---------+---------+--------+
+| empno | ename | job     | sal     | deptno |
++-------+-------+---------+---------+--------+
+|  7566 | JONES | MANAGER | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER | 2850.00 |     30 |
++-------+-------+---------+---------+--------+
+2 rows in set (0.00 sec)
+
+-Write a query to list SALESMAN working in dept 30 and earning salary greater than 1000 and list   all CLERK's  of any dept with salary less than 1000. Sort on their salaries
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE job='SALESMAN' AND deptno=30 AND sal > 1000
+    -> OR job='CLERK' AND sal < 1000
+    -> ORDER BY sal;
++-------+--------+----------+---------+--------+
+| empno | ename  | job      | sal     | deptno |
++-------+--------+----------+---------+--------+
+|  7369 | SMITH  | CLERK    |  800.00 |     20 |
+|  7900 | JAMES  | CLERK    |  950.00 |     30 |
+|  7521 | WARD   | SALESMAN | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN | 1250.00 |     30 |
+|  7844 | TURNER | SALESMAN | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN | 1600.00 |     30 |
++-------+--------+----------+---------+--------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE (job='SALESMAN' AND deptno=30 AND sal > 1000)
+    -> OR (job='CLERK' AND sal < 1000)
+    -> ORDER BY sal;
++-------+--------+----------+---------+--------+
+| empno | ename  | job      | sal     | deptno |
++-------+--------+----------+---------+--------+
+|  7369 | SMITH  | CLERK    |  800.00 |     20 |
+|  7900 | JAMES  | CLERK    |  950.00 |     30 |
+|  7521 | WARD   | SALESMAN | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN | 1250.00 |     30 |
+|  7844 | TURNER | SALESMAN | 1500.00 |     30 |
+|  7499 | ALLEN  | SALESMAN | 1600.00 |     30 |
++-------+--------+----------+---------+--------+
+6 rows in set (0.00 sec)
+
+-Write a query to list employees who are earning annual salary greater than 25000. Include COMM
+ while computing annual salary. Sort on annual salary field in reverse order.
+
+mysql> SELECT empno,ename,job,sal,comm,sal*12+coalesce(comm,0) "Annual Salary"
+    -> FROM emp
+    -> WHERE sal*12+coalesce(comm,0) > 25000
+    -> ORDER BY sal*12+coalesce(comm,0) DESC;
++-------+-------+-----------+---------+------+---------------+
+| empno | ename | job       | sal     | comm | Annual Salary |
++-------+-------+-----------+---------+------+---------------+
+|  7839 | KING  | PRESIDENT | 5000.00 | NULL |      60000.00 |
+|  7788 | SCOTT | ANALYST   | 3000.00 | NULL |      36000.00 |
+|  7902 | FORD  | ANALYST   | 3000.00 | NULL |      36000.00 |
+|  7566 | JONES | MANAGER   | 2975.00 | NULL |      35700.00 |
+|  7698 | BLAKE | MANAGER   | 2850.00 | NULL |      34200.00 |
+|  7782 | CLARK | MANAGER   | 2450.00 | NULL |      29400.00 |
++-------+-------+-----------+---------+------+---------------+
+6 rows in set (0.00 sec)
+
+-ORDER BY clause does not support ALIAS names if it is enclosed in quotes
+
+mysql> SELECT empno,ename,job,sal,comm,sal*12+coalesce(comm,0) "AnnSal"
+    -> FROM emp
+    -> WHERE sal*12+coalesce(comm,0) > 25000
+    -> ORDER BY "AnnSal";
++-------+-------+-----------+---------+------+----------+
+| empno | ename | job       | sal     | comm | AnnSal   |
++-------+-------+-----------+---------+------+----------+
+|  7566 | JONES | MANAGER   | 2975.00 | NULL | 35700.00 |
+|  7698 | BLAKE | MANAGER   | 2850.00 | NULL | 34200.00 |
+|  7782 | CLARK | MANAGER   | 2450.00 | NULL | 29400.00 |
+|  7788 | SCOTT | ANALYST   | 3000.00 | NULL | 36000.00 |
+|  7839 | KING  | PRESIDENT | 5000.00 | NULL | 60000.00 |
+|  7902 | FORD  | ANALYST   | 3000.00 | NULL | 36000.00 |
++-------+-------+-----------+---------+------+----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,comm,sal*12+coalesce(comm,0) annsal
+    -> FROM emp
+    -> WHERE sal*12+coalesce(comm,0) > 25000
+    -> ORDER BY annsal DESC;
++-------+-------+-----------+---------+------+----------+
+| empno | ename | job       | sal     | comm | annsal   |
++-------+-------+-----------+---------+------+----------+
+|  7839 | KING  | PRESIDENT | 5000.00 | NULL | 60000.00 |
+|  7788 | SCOTT | ANALYST   | 3000.00 | NULL | 36000.00 |
+|  7902 | FORD  | ANALYST   | 3000.00 | NULL | 36000.00 |
+|  7566 | JONES | MANAGER   | 2975.00 | NULL | 35700.00 |
+|  7698 | BLAKE | MANAGER   | 2850.00 | NULL | 34200.00 |
+|  7782 | CLARK | MANAGER   | 2450.00 | NULL | 29400.00 |
++-------+-------+-----------+---------+------+----------+
+6 rows in set (0.00 sec)
+
+-Other date formats supported in MySQL
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='1981-12-03';
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7900 | JAMES | 1981-12-03 |
+|  7902 | FORD  | 1981-12-03 |
++-------+-------+------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='81-12-03';
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7900 | JAMES | 1981-12-03 |
+|  7902 | FORD  | 1981-12-03 |
++-------+-------+------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate='811203';
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7900 | JAMES | 1981-12-03 |
+|  7902 | FORD  | 1981-12-03 |
++-------+-------+------------+
+2 rows in set (0.00 sec)
+***********************************************************************
+SQL operators:
+--------------
+IN, NOT IN
+BETWEEN, NOT BETWEEN
+LIKE, NOT LIKE
+IS NULL, IS NOT NULL
+
+IN operator:
+------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE deptno IN (10,30);
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+9 rows in set (0.03 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE deptno=10 or deptno=30;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+9 rows in set (0.00 sec)
+
+-Write a query to list all employees except CLERK and SALESMAN
+
+NOT IN operator:
+----------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE job NOT IN('CLERK','SALESMAN');
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+6 rows in set (0.00 sec)
+
+BETWEEN operator:
+-----------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal BETWEEN 2000 AND 3000;
++-------+-------+---------+---------+--------+
+| empno | ename | job     | sal     | deptno |
++-------+-------+---------+---------+--------+
+|  7566 | JONES | MANAGER | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST | 3000.00 |     20 |
+|  7902 | FORD  | ANALYST | 3000.00 |     20 |
++-------+-------+---------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal >= 2000 AND sal <= 3000;
++-------+-------+---------+---------+--------+
+| empno | ename | job     | sal     | deptno |
++-------+-------+---------+---------+--------+
+|  7566 | JONES | MANAGER | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST | 3000.00 |     20 |
+|  7902 | FORD  | ANALYST | 3000.00 |     20 |
++-------+-------+---------+---------+--------+
+5 rows in set (0.00 sec)
+
+-Write a query to list employees who were hired during first half of 1981.
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE hiredate BETWEEN '1981-01-01' AND '1981-06-30';
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7499 | ALLEN | 1981-02-20 |
+|  7521 | WARD  | 1981-02-22 |
+|  7566 | JONES | 1981-04-02 |
+|  7698 | BLAKE | 1981-05-01 |
+|  7782 | CLARK | 1981-06-09 |
++-------+-------+------------+
+5 rows in set (0.00 sec)
+
+LIKE operator:
+--------------
+mysql> SELECT empno,ename
+    -> FROM emp
+    -> WHERE ename LIKE 'A%';
++-------+-------+
+| empno | ename |
++-------+-------+
+|  7499 | ALLEN |
+|  7876 | ADAMS |
++-------+-------+
+2 rows in set (0.06 sec)
+
+"%" means any number of any characters
+
+mysql> SELECT empno,ename
+    -> FROM emp
+    -> WHERE ename LIKE 'J%S';
++-------+-------+
+| empno | ename |
++-------+-------+
+|  7566 | JONES |
+|  7900 | JAMES |
++-------+-------+
+
+mysql> SELECT empno,ename
+    -> FROM emp
+    -> WHERE ename LIKE '____';
++-------+-------+
+| empno | ename |
++-------+-------+
+|  7521 | WARD  |
+|  7839 | KING  |
+|  7902 | FORD  |
++-------+-------+
+3 rows in set (0.00 sec)
+
+"_" means any single character
+
+-Write a query to list employees who are having character 'L' at 3rd position in their names.
+
+mysql> SELECT empno,ename
+    -> FROM emp
+    -> WHERE ename LIKE '__L%';
++-------+--------+
+| empno | ename  |
++-------+--------+
+|  7499 | ALLEN  |
+|  7934 | MILLER |
++-------+--------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,comm
+    -> FROM emp
+    -> WHERE comm=NULL;
+Empty set (0.00 sec)
+
+IS NULL operator
+----------------
+mysql> SELECT empno,ename,job,sal,comm
+    -> FROM emp
+    -> WHERE comm IS NULL;
++-------+--------+-----------+---------+------+
+| empno | ename  | job       | sal     | comm |
++-------+--------+-----------+---------+------+
+|  7369 | SMITH  | CLERK     |  800.00 | NULL |
+|  7566 | JONES  | MANAGER   | 2975.00 | NULL |
+|  7698 | BLAKE  | MANAGER   | 2850.00 | NULL |
+|  7782 | CLARK  | MANAGER   | 2450.00 | NULL |
+|  7788 | SCOTT  | ANALYST   | 3000.00 | NULL |
+|  7839 | KING   | PRESIDENT | 5000.00 | NULL |
+|  7876 | ADAMS  | CLERK     | 1100.00 | NULL |
+|  7900 | JAMES  | CLERK     |  950.00 | NULL |
+|  7902 | FORD   | ANALYST   | 3000.00 | NULL |
+|  7934 | MILLER | CLERK     | 1300.00 | NULL |
++-------+--------+-----------+---------+------+
+10 rows in set (0.00 sec)
+
+-Write a query to list employees who do not have manager.
+
+mysql> SELECT empno,ename,job,mgr
+    -> FROM emp
+    -> WHERE mgr IS NULL;
++-------+-------+-----------+------+
+| empno | ename | job       | mgr  |
++-------+-------+-----------+------+
+|  7839 | KING  | PRESIDENT | NULL |
++-------+-------+-----------+------+
+1 row in set (0.00 sec)
+***************************************************************************
+LIMIT clause in MySQL
+----------------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> LIMIT 5;
++-------+--------+----------+---------+--------+
+| empno | ename  | job      | sal     | deptno |
++-------+--------+----------+---------+--------+
+|  7369 | SMITH  | CLERK    |  800.00 |     20 |
+|  7499 | ALLEN  | SALESMAN | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN | 1250.00 |     30 |
+|  7566 | JONES  | MANAGER  | 2975.00 |     20 |
+|  7654 | MARTIN | SALESMAN | 1250.00 |     30 |
++-------+--------+----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY sal DESC
+    -> LIMIT 5;
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
++-------+-------+-----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> LIMIT 3 OFFSET 2;
++-------+--------+----------+---------+--------+
+| empno | ename  | job      | sal     | deptno |
++-------+--------+----------+---------+--------+
+|  7521 | WARD   | SALESMAN | 1250.00 |     30 |
+|  7566 | JONES  | MANAGER  | 2975.00 |     20 |
+|  7654 | MARTIN | SALESMAN | 1250.00 |     30 |
++-------+--------+----------+---------+--------+
+3 rows in set (0.06 sec)
+
+-Write a query to find 5th top earner from EMP table.
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> ORDER BY sal DESC
+    -> LIMIT 1 OFFSET 4;
++-------+-------+---------+---------+--------+
+| empno | ename | job     | sal     | deptno |
++-------+-------+---------+---------+--------+
+|  7698 | BLAKE | MANAGER | 2850.00 |     30 |
++-------+-------+---------+---------+--------+
+******************************************************************************************
+DDL commands:
+-------------
+CREATE : Creating a table
+-------------------------
+Constraints:
+------------
+ -Constraint is one or more rules imposed on columns of the table.
+
+Types of Constraints:
+---------------------
+Primary Key
+Unique
+Foreign Key
+Check
+NOT NULL
+
+-Constraints can be defined at 2 levels
+
+1. Table Level
+2. Column Level
+
+Table Level:
+------------
+ -Normally constraints are defined after defining all the columns
+ -Composite Keys must be defined at table level
+
+Column Level:
+-------------
+ -These are defined alongwith column definition.
+ -NOT NULL is defined at column level.
+
+Example:
+--------
+mysql> CREATE DATABASE happyminds;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> USE happyminds;
+Database changed
+
+mysql> CREATE TABLE dept(
+    ->   deptno tinyint PRIMARY KEY,
+    ->   dname varchar(12),
+    ->   loc varchar(10),
+    ->   CONSTRAINT dept_dname_loc_unq UNIQUE(dname,loc)
+    -> );
+Query OK, 0 rows affected (0.38 sec)
+
+-In MySQL constraint name for PRIMARY KEY is not supported.
+
+mysql> CREATE TABLE emp(
+    ->   empno mediumint PRIMARY KEY,
+    ->   ename varchar(10) NOT NULL,
+    ->   job varchar(11),
+    ->   mgr mediumint, CONSTRAINT emp_mgr_fk FOREIGN KEY(mgr) REFERENCES emp(empno),
+    ->   hiredate date,
+    ->   sal float(9,2),
+    ->   comm float(7,2),
+    ->   deptno tinyint,
+    ->   CONSTRAINT emp_deptno_fk FOREIGN KEY(deptno)
+    ->   REFERENCES dept(deptno) ON DELETE SET NULL
+    -> );
+Query OK, 0 rows affected (0.34 sec)
+
+mysql> DESC dept;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| deptno | tinyint(4)  | NO   | PRI | NULL    |       |
+| dname  | varchar(12) | YES  | MUL | NULL    |       |
+| loc    | varchar(10) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.08 sec)
+
+mysql> DESC emp;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| empno    | mediumint(9) | NO   | PRI | NULL    |       |
+| ename    | varchar(10)  | NO   |     | NULL    |       |
+| job      | varchar(11)  | YES  |     | NULL    |       |
+| mgr      | mediumint(9) | YES  | MUL | NULL    |       |
+| hiredate | date         | YES  |     | NULL    |       |
+| sal      | float(9,2)   | YES  |     | NULL    |       |
+| comm     | float(7,2)   | YES  |     | NULL    |       |
+| deptno   | tinyint(4)   | YES  | MUL | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+8 rows in set (0.01 sec)
+
+-To view constraint details
+
+mysql> SELECT table_name,constraint_name,constraint_type
+    -> FROM information_schema.table_constraints
+    -> WHERE table_name IN('DEPT','EMP') AND table_schema='HAPPYMINDS';
++------------+--------------------+-----------------+
+| table_name | constraint_name    | constraint_type |
++------------+--------------------+-----------------+
+| dept       | PRIMARY            | PRIMARY KEY     |
+| dept       | dept_dname_loc_unq | UNIQUE          |
+| emp        | PRIMARY            | PRIMARY KEY     |
+| emp        | emp_deptno_fk      | FOREIGN KEY     |
+| emp        | emp_mgr_fk         | FOREIGN KEY     |
++------------+--------------------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> show keys from dept;
++-------+------------+--------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| Table | Non_unique | Key_name           | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Ignored |
++-------+------------+--------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| dept  |          0 | PRIMARY            |            1 | deptno      | A         |           0 |     NULL | NULL   |      | BTREE      |         |               | NO      |
+| dept  |          0 | dept_dname_loc_unq |            1 | dname       | A         |           0 |     NULL | NULL   | YES  | BTREE      |         |               | NO      |
+| dept  |          0 | dept_dname_loc_unq |            2 | loc         | A         |           0 |     NULL | NULL   | YES  | BTREE      |         |               | NO      |
++-------+------------+--------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+3 rows in set (0.01 sec)
+
+mysql> show keys from emp;
++-------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| Table | Non_unique | Key_name      | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Ignored |
++-------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| emp   |          0 | PRIMARY       |            1 | empno       | A         |           0 |     NULL | NULL   |      | BTREE      |         |               | NO      |
+| emp   |          1 | emp_mgr_fk    |            1 | mgr         | A         |           0 |     NULL | NULL   | YES  | BTREE      |         |               | NO      |
+| emp   |          1 | emp_deptno_fk |            1 | deptno      | A         |           0 |     NULL | NULL   | YES  | BTREE      |         |               | NO      |
++-------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+3 rows in set (0.00 sec)
+
+-Creating table using existing table
+
+Ex: Creating table EMP10 in HAPPYMINDS database using EMP table present in COMPANY database.
+
+mysql> CREATE TABLE emp10
+    -> AS
+    -> SELECT empno,ename,job,sal,deptno
+    -> FROM company.emp
+    -> WHERE deptno=10;
+Query OK, 3 rows affected (0.46 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> DESC emp10;
++--------+------------------+------+-----+---------+-------+
+| Field  | Type             | Null | Key | Default | Extra |
++--------+------------------+------+-----+---------+-------+
+| empno  | int(10) unsigned | NO   |     | NULL    |       |
+| ename  | varchar(10)      | YES  |     | NULL    |       |
+| job    | varchar(12)      | YES  |     | NULL    |       |
+| sal    | float(9,2)       | YES  |     | NULL    |       |
+| deptno | tinyint(4)       | YES  |     | NULL    |       |
++--------+------------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM emp10;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+3 rows in set (0.00 sec)
+
+-When you create a table using existing table, except for NOT NULL constraint no other constraints
+ would be copied.
+
+-If SELECT statement is successful in fetching rows, same would be copied into new table else only
+ structure would be copied.
+
+mysql> show keys from emp10;
+Empty set (0.00 sec)
+********************************************************************************
+ALTERing table structure:
+-------------------------
+-Adding a column
+
+mysql> ALTER TABLE emp10
+    -> ADD lastname varchar(12) default 'PETER';
+Query OK, 0 rows affected (0.35 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM emp10;
++-------+--------+-----------+---------+--------+----------+
+| empno | ename  | job       | sal     | deptno | lastname |
++-------+--------+-----------+---------+--------+----------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 | PETER    |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 | PETER    |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 | PETER    |
++-------+--------+-----------+---------+--------+----------+
+3 rows in set (0.00 sec)
+
+-Adding Primary Key constraint on EMPNO of EMP10
+
+mysql> ALTER TABLE emp10
+    -> ADD PRIMARY KEY(empno);
+Query OK, 0 rows affected (0.58 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+-Add UNIQUE constraint on ENAME column of EMP10 table
+
+mysql> ALTER TABLE emp10
+    -> ADD CONSTRAINT emp10_ename_unq UNIQUE(ename);
+Query OK, 0 rows affected (0.38 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+-Add foreign key constraint on DEPTNO of EMP10 with reference to DEPTNO of DEPT table.
+
+mysql> ALTER TABLE emp10
+    -> ADD CONSTRAINT emp10_deptno_fk FOREIGN KEY(deptno)
+    -> REFERENCES dept(deptno);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`happyminds`.`#sql-alter-1814-13`, CONSTRAINT `emp10_deptno_fk` FOREIGN KEY (`deptno`) REFERENCES `dept` (`deptno`))
+
+mysql> SELECT * FROM dept;
+Empty set (0.00 sec)
+
+mysql> INSERT INTO dept VALUES(10,'ACCOUNTING','NEW YORK');
+Query OK, 1 row affected (0.09 sec)
+
+mysql> ALTER TABLE emp10
+    -> ADD CONSTRAINT emp10_deptno_fk FOREIGN KEY(deptno)
+    -> REFERENCES dept(deptno);
+Query OK, 3 rows affected (0.73 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+-----------------------------------------------
+-Changing datatype, size and adding NOT NULL constraint
+
+mysql> ALTER TABLE emp10
+    -> MODIFY lastname char(25) NOT NULL;
+Query OK, 3 rows affected (0.60 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+-To rename a column
+
+mysql> ALTER TABLE emp10
+    -> CHANGE COLUMN lastname lname varchar(12);
+Query OK, 3 rows affected (1.07 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+-----------------------------------------------
+-Removing constraints
+
+mysql> ALTER TABLE emp10
+    -> DROP FOREIGN KEY emp10_deptno_fk;
+Query OK, 0 rows affected (0.23 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE emp10
+    -> DROP KEY emp10_ename_unq;
+Query OK, 0 rows affected (0.32 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE emp10
+    -> DROP PRIMARY KEY;
+Query OK, 3 rows affected (0.61 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+-Removing columns
+
+mysql> ALTER TABLE emp10
+    -> DROP column lname;
+Query OK, 0 rows affected (0.34 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+-Renaming a table
+
+mysql> ALTER TABLE emp10
+    -> RENAME to empl10;
+Query OK, 0 rows affected (0.20 sec)
+
+-Removing all the rows from the table: TRUNCATE
+
+mysql> SELECT * FROM empl10;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+3 rows in set (0.00 sec)
+
+mysql> TRUNCATE TABLE empl10;
+Query OK, 0 rows affected (0.26 sec)
+
+mysql> ROLLBACK;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM empl10;
+Empty set (0.00 sec)
+
+-Removing table from database: DROP
+
+mysql> DROP TABLE empl10;
+Query OK, 0 rows affected (0.23 sec)
+----------------------------------------------------------------------------
+TRUNCATE - Removes all the rows from the table. Structure remains.
+
+DROP - Will remove the table from database.
+**********************************************************************************************
+DROP TABLE lineitem;
+DROP TABLE invoice;
+DROP TABLE customer;
+
+CREATE TABLE customer(
+ custno tinyint primary key,
+ name varchar(12) unique not null,
+ addr varchar(20)
+);
+
+CREATE TABLE invoice(
+ invoiceno mediumint primary key,
+ custno tinyint,
+ constraint invoice_custno_fk foreign key(custno)
+ references customer(custno)
+);
+
+CREATE TABLE lineitem(
+  invoiceno mediumint,
+  lineitemno tinyint,
+  part varchar(12) not null,
+  qty mediumint check (qty > 0),
+  amt float(6,2),
+  constraint lineitem_invoiceno_fk foreign key(invoiceno) references invoice(invoiceno),
+  constraint lineitem_inv_lineitemno_pk primary key(invoiceno,lineitemno)
+);
+
+INSERT INTO CUSTOMER(CUSTNO,NAME,ADDR)
+VALUES(43,'Jones','121 1st'),
+      (55,'Smith','222 2nd');
+
+INSERT INTO INVOICE(INVOICENO,CUSTNO)
+VALUES(1001,43),
+(1002,55),
+(1003,43);
+
+INSERT INTO LINEITEM(INVOICENO,LINEITEMNO,PART,QTY,AMT)
+VALUES(1001,1,'Screw',200,2),
+(1001,2,'Nut',300,2.25),
+(1001,3,'Washr',100,0.75),
+(1002,1,'Motor',1,52),
+(1002,2,'Brace',5,44.44),
+(1003,1,'Saw',10,121);
+*********************************************************************************************
+DML commands:
+-------------
+INSERT - Adding new rows into table.
+------------------------------------
+mysql> desc dept;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| deptno | tinyint(4)  | NO   | PRI | NULL    |       |
+| dname  | varchar(12) | YES  | MUL | NULL    |       |
+| loc    | varchar(10) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     10 | ACCOUNTING | NEW YORK |
++--------+------------+----------+
+1 row in set (0.00 sec)
+
+mysql> INSERT INTO dept(deptno,loc,dname)
+    -> VALUES(20,'DALLAS','RESEARCH');
+Query OK, 1 row affected (0.10 sec)
+
+mysql> INSERT INTO dept VALUES(30,'SALES','CHICAGO');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> INSERT INTO dept VALUES(40,'OPERATIONS',NULL);
+Query OK, 1 row affected (0.10 sec)
+
+mysql> INSERT INTO dept (deptno,loc) VALUES(50,'SAN JOSE');
+Query OK, 1 row affected (0.10 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | NULL     |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+-Copying rows from another table
+
+mysql> CREATE TABLE emp10
+    -> AS
+    -> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE 1=0;
+Query OK, 0 rows affected (0.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESC emp10;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| empno  | mediumint(9) | NO   |     | NULL    |       |
+| ename  | varchar(10)  | NO   |     | NULL    |       |
+| job    | varchar(11)  | YES  |     | NULL    |       |
+| sal    | float(9,2)   | YES  |     | NULL    |       |
+| deptno | tinyint(4)   | YES  |     | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> SELECT * FROM emp10;
+Empty set (0.00 sec)
+
+mysql> INSERT INTO emp10
+    -> (empno,ename,job,sal,deptno)
+    -> SELECT empno,ename,job,sal,deptno
+    -> FROM company.emp
+    -> WHERE deptno=10;
+Query OK, 3 rows affected (0.06 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM emp10;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+3 rows in set (0.00 sec)
+
+-Modifying rows in the table:UPDATE
+
+mysql> UPDATE emp10
+    -> SET job='ANALYST',sal=3000,deptno=20
+    -> WHERE empno=7934;
+Query OK, 1 row affected (0.10 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM emp10;
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7934 | MILLER | ANALYST   | 3000.00 |     20 |
++-------+--------+-----------+---------+--------+
+
+-To remove unwanted rows from the table: DELETE
+
+mysql> DELETE FROM emp10
+    -> WHERE empno IN(7782,7839);
+Query OK, 2 rows affected (0.09 sec)
+*****************************************************************************************
+AUTO_INCREMENT mechanism in MySQL
+---------------------------------
+mysql> CREATE TABLE players(
+    ->  id mediumint primary key auto_increment,
+    ->  name varchar(12));
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> INSERT INTO players VALUES('sachin');
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+
+mysql> INSERT INTO players(name) VALUES('sachin');
+Query OK, 1 row affected (0.09 sec)
+
+mysql> INSERT INTO players(name) VALUES('dravid');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> SELECT * FROM players;
++----+--------+
+| id | name   |
++----+--------+
+|  1 | sachin |
+|  2 | dravid |
++----+--------+
+2 rows in set (0.00 sec)
+
+mysql> INSERT INTO players(name) VALUES('laxman'),('kohli'),('dhoni');
+Query OK, 3 rows affected (0.05 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM players;
++----+--------+
+| id | name   |
++----+--------+
+|  1 | sachin |
+|  2 | dravid |
+|  3 | laxman |
+|  4 | kohli  |
+|  5 | dhoni  |
++----+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT last_insert_id();
++------------------+
+| last_insert_id() |
++------------------+
+|                3 |
++------------------+
+1 row in set (0.04 sec)
+
+mysql> ALTER TABLE players auto_increment=101;
+Query OK, 0 rows affected (0.30 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO players(name) VALUES('jadeja');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> SELECT * FROM players;
++-----+--------+
+| id  | name   |
++-----+--------+
+|   1 | sachin |
+|   2 | dravid |
+|   3 | laxman |
+|   4 | kohli  |
+|   5 | dhoni  |
+| 101 | jadeja |
++-----+--------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO players(id,name) VALUES(105,'pandya');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> SELECT * FROM players;
++-----+--------+
+| id  | name   |
++-----+--------+
+|   1 | sachin |
+|   2 | dravid |
+|   3 | laxman |
+|   4 | kohli  |
+|   5 | dhoni  |
+| 101 | jadeja |
+| 105 | pandya |
++-----+--------+
+7 rows in set (0.00 sec)
+
+mysql> INSERT INTO players(name) VALUES('shreyas');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> SELECT * FROM players;
++-----+---------+
+| id  | name    |
++-----+---------+
+|   1 | sachin  |
+|   2 | dravid  |
+|   3 | laxman  |
+|   4 | kohli   |
+|   5 | dhoni   |
+| 101 | jadeja  |
+| 105 | pandya  |
+| 106 | shreyas |
++-----+---------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT last_insert_id();
++------------------+
+| last_insert_id() |
++------------------+
+|              106 |
++------------------+
+1 row in set (0.00 sec)
+**********************************************************************************************
+Functions:
+----------
+-Function is a stored sub-program which accepts zero or more arguments, performs some computation
+ and returns a single value.
+
+Types of Functions:
+-------------------
+Single Row Function:
+--------------------
+ -In this case for each row what it takes as argument, performs computation and returns a 
+  single value.
+
+Multi Row/GROUP/AGGREGATE Functions:
+------------------------------------
+ -Accepts multiple rows as argument, performs some aggregation and returns a single value for
+  those group of rows.
+
+Single Row Functions:
+---------------------
+Number Functions:
+-----------------
+mysql> SELECT round(10.4),round(10.5),round(10.444,2),round(10.445,2);
++-------------+-------------+-----------------+-----------------+
+| round(10.4) | round(10.5) | round(10.444,2) | round(10.445,2) |
++-------------+-------------+-----------------+-----------------+
+|          10 |          11 |           10.44 |           10.45 |
++-------------+-------------+-----------------+-----------------+
+1 row in set (0.05 sec)
+
+mysql> SELECT truncate(10.440,2),truncate(10.449,2);
++--------------------+--------------------+
+| truncate(10.440,2) | truncate(10.449,2) |
++--------------------+--------------------+
+|              10.44 |              10.44 |
++--------------------+--------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT floor(11.1),floor(11.9),floor(-11.5);
++-------------+-------------+--------------+
+| floor(11.1) | floor(11.9) | floor(-11.5) |
++-------------+-------------+--------------+
+|          11 |          11 |          -12 |
++-------------+-------------+--------------+
+1 row in set (0.06 sec)
+
+mysql> SELECT ceil(11.1),ceil(11.9),ceil(-11.5);
++------------+------------+-------------+
+| ceil(11.1) | ceil(11.9) | ceil(-11.5) |
++------------+------------+-------------+
+|         12 |         12 |         -11 |
++------------+------------+-------------+
+1 row in set (0.06 sec)
+
+mysql> SELECT pow(5,3),sqrt(125),abs(-145.6);
++----------+--------------------+-------------+
+| pow(5,3) | sqrt(125)          | abs(-145.6) |
++----------+--------------------+-------------+
+|      125 | 11.180339887498949 |       145.6 |
++----------+--------------------+-------------+
+1 row in set (0.06 sec)
+
+mysql> SELECT sign(10-5),sign(5-10),sign(5-5);
++------------+------------+-----------+
+| sign(10-5) | sign(5-10) | sign(5-5) |
++------------+------------+-----------+
+|          1 |         -1 |         0 |
++------------+------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT mod(10,3);
++-----------+
+| mod(10,3) |
++-----------+
+|         1 |
++-----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT least(10,2,13,3),greatest(10,2,13,3);
++------------------+---------------------+
+| least(10,2,13,3) | greatest(10,2,13,3) |
++------------------+---------------------+
+|                2 |                  13 |
++------------------+---------------------+
+1 row in set (0.00 sec)
+
+Character Functions:
+--------------------
+mysql> USE company;
+Database changed
+mysql> SELECT empno,ename,job,concat(ename,job) ename_job FROM emp;
++-------+--------+-----------+----------------+
+| empno | ename  | job       | ename_job      |
++-------+--------+-----------+----------------+
+|  7369 | SMITH  | CLERK     | SMITHCLERK     |
+|  7499 | ALLEN  | SALESMAN  | ALLENSALESMAN  |
+|  7521 | WARD   | SALESMAN  | WARDSALESMAN   |
+|  7566 | JONES  | MANAGER   | JONESMANAGER   |
+|  7654 | MARTIN | SALESMAN  | MARTINSALESMAN |
+|  7698 | BLAKE  | MANAGER   | BLAKEMANAGER   |
+|  7782 | CLARK  | MANAGER   | CLARKMANAGER   |
+|  7788 | SCOTT  | ANALYST   | SCOTTANALYST   |
+|  7839 | KING   | PRESIDENT | KINGPRESIDENT  |
+|  7844 | TURNER | SALESMAN  | TURNERSALESMAN |
+|  7876 | ADAMS  | CLERK     | ADAMSCLERK     |
+|  7900 | JAMES  | CLERK     | JAMESCLERK     |
+|  7902 | FORD   | ANALYST   | FORDANALYST    |
+|  7934 | MILLER | CLERK     | MILLERCLERK    |
++-------+--------+-----------+----------------+
+14 rows in set (0.06 sec)
+
+mysql> SELECT concat(ename,' works as ',job) "ename_job" FROM emp;
++--------------------------+
+| ename_job                |
++--------------------------+
+| SMITH works as CLERK     |
+| ALLEN works as SALESMAN  |
+| WARD works as SALESMAN   |
+| JONES works as MANAGER   |
+| MARTIN works as SALESMAN |
+| BLAKE works as MANAGER   |
+| CLARK works as MANAGER   |
+| SCOTT works as ANALYST   |
+| KING works as PRESIDENT  |
+| TURNER works as SALESMAN |
+| ADAMS works as CLERK     |
+| JAMES works as CLERK     |
+| FORD works as ANALYST    |
+| MILLER works as CLERK    |
++--------------------------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT concat_ws('-',empno,ename) "empno_ename" FROM emp;
++-------------+
+| empno_ename |
++-------------+
+| 7369-SMITH  |
+| 7499-ALLEN  |
+| 7521-WARD   |
+| 7566-JONES  |
+| 7654-MARTIN |
+| 7698-BLAKE  |
+| 7782-CLARK  |
+| 7788-SCOTT  |
+| 7839-KING   |
+| 7844-TURNER |
+| 7876-ADAMS  |
+| 7900-JAMES  |
+| 7902-FORD   |
+| 7934-MILLER |
++-------------+
+14 rows in set (0.02 sec)
+
+mysql> SELECT concat_ws('-',empno,ename) FROM emp;
++----------------------------+
+| concat_ws('-',empno,ename) |
++----------------------------+
+| 7369-SMITH                 |
+| 7499-ALLEN                 |
+| 7521-WARD                  |
+| 7566-JONES                 |
+| 7654-MARTIN                |
+| 7698-BLAKE                 |
+| 7782-CLARK                 |
+| 7788-SCOTT                 |
+| 7839-KING                  |
+| 7844-TURNER                |
+| 7876-ADAMS                 |
+| 7900-JAMES                 |
+| 7902-FORD                  |
+| 7934-MILLER                |
++----------------------------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT dname,length(dname),char_length(dname),character_length(dname) FROM dept;
++------------+---------------+--------------------+-------------------------+
+| dname      | length(dname) | char_length(dname) | character_length(dname) |
++------------+---------------+--------------------+-------------------------+
+| ACCOUNTING |            10 |                 10 |                      10 |
+| OPERATIONS |            10 |                 10 |                      10 |
+| RESEARCH   |             8 |                  8 |                       8 |
+| SALES      |             5 |                  5 |                       5 |
++------------+---------------+--------------------+-------------------------+
+4 rows in set (0.13 sec)
+
+mysql> SELECT lower(dname),upper(dname),lcase(dname),ucase(dname) FROM dept;
++--------------+--------------+--------------+--------------+
+| lower(dname) | upper(dname) | lcase(dname) | ucase(dname) |
++--------------+--------------+--------------+--------------+
+| accounting   | ACCOUNTING   | accounting   | ACCOUNTING   |
+| operations   | OPERATIONS   | operations   | OPERATIONS   |
+| research     | RESEARCH     | research     | RESEARCH     |
+| sales        | SALES        | sales        | SALES        |
++--------------+--------------+--------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT dname,locate('ES',dname) FROM dept;
++------------+--------------------+
+| dname      | locate('ES',dname) |
++------------+--------------------+
+| ACCOUNTING |                  0 |
+| OPERATIONS |                  0 |
+| RESEARCH   |                  2 |
+| SALES      |                  4 |
++------------+--------------------+
+4 rows in set (0.00 sec)
+
+-Write a query to list employees who are having character 'L' as 3rd character in their names.
+-Try with LOCATE()
+
+mysql> SELECT dname,position('ES'in dname) FROM dept;
++------------+------------------------+
+| dname      | position('ES'in dname) |
++------------+------------------------+
+| ACCOUNTING |                      0 |
+| OPERATIONS |                      0 |
+| RESEARCH   |                      2 |
+| SALES      |                      4 |
++------------+------------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT dname,substring(dname,2,3),substring(dname,3) FROM dept;
++------------+----------------------+--------------------+
+| dname      | substring(dname,2,3) | substring(dname,3) |
++------------+----------------------+--------------------+
+| ACCOUNTING | CCO                  | COUNTING           |
+| OPERATIONS | PER                  | ERATIONS           |
+| RESEARCH   | ESE                  | SEARCH             |
+| SALES      | ALE                  | LES                |
++------------+----------------------+--------------------+
+4 rows in set (0.00 sec)
+
+-Write a query to list employees who are having character 'L' as 3rd character in their names.
+-Try with SUBSTRING()
+######################################## DAY-3 #############################################
+mysql> SELECT ename,substring(ename,3,1)
+    -> FROM emp
+    -> WHERE substring(ename,3,1)='L';
++--------+----------------------+
+| ename  | substring(ename,3,1) |
++--------+----------------------+
+| ALLEN  | L                    |
+| MILLER | L                    |
++--------+----------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT dname,lpad(dname,15,'*'),lpad(dname,15),
+    -> rpad(dname,15,'.'),rpad(dname,15)
+    -> FROM dept;
++------------+--------------------+-----------------+--------------------+-----------------+
+| dname      | lpad(dname,15,'*') | lpad(dname,15)  | rpad(dname,15,'.') | rpad(dname,15)  |
++------------+--------------------+-----------------+--------------------+-----------------+
+| ACCOUNTING | *****ACCOUNTING    |      ACCOUNTING | ACCOUNTING.....    | ACCOUNTING      |
+| OPERATIONS | *****OPERATIONS    |      OPERATIONS | OPERATIONS.....    | OPERATIONS      |
+| RESEARCH   | *******RESEARCH    |        RESEARCH | RESEARCH.......    | RESEARCH        |
+| SALES      | **********SALES    |           SALES | SALES..........    | SALES           |
++------------+--------------------+-----------------+--------------------+-----------------+
+4 rows in set (0.10 sec)
+
+mysql> SELECT dname,lpad(dname,15,'*'),lpad(dname,15,' '),
+    -> rpad(dname,15,'.'),rpad(dname,15,' ')
+    -> FROM dept;
++------------+--------------------+--------------------+--------------------+--------------------+
+| dname      | lpad(dname,15,'*') | lpad(dname,15,' ') | rpad(dname,15,'.') | rpad(dname,15,' ') |
++------------+--------------------+--------------------+--------------------+--------------------+
+| ACCOUNTING | *****ACCOUNTING    |      ACCOUNTING    | ACCOUNTING.....    | ACCOUNTING         |
+| OPERATIONS | *****OPERATIONS    |      OPERATIONS    | OPERATIONS.....    | OPERATIONS         |
+| RESEARCH   | *******RESEARCH    |        RESEARCH    | RESEARCH.......    | RESEARCH           |
+| SALES      | **********SALES    |           SALES    | SALES..........    | SALES              |
++------------+--------------------+--------------------+--------------------+--------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT ltrim('   welcome   '),rtrim('   welcome   ');
++------------------------+------------------------+
+| ltrim('   welcome   ') | rtrim('   welcome   ') |
++------------------------+------------------------+
+| welcome                |    welcome             |
++------------------------+------------------------+
+1 row in set (0.06 sec)
+
+mysql> SELECT ltrim(rtrim('   welcome   '));
++-------------------------------+
+| ltrim(rtrim('   welcome   ')) |
++-------------------------------+
+| welcome                       |
++-------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT left('DATABASE',4),right('DATABASE',4);
++--------------------+---------------------+
+| left('DATABASE',4) | right('DATABASE',4) |
++--------------------+---------------------+
+| DATA               | BASE                |
++--------------------+---------------------+
+1 row in set (0.05 sec)
+
+mysql> SELECT dname,replace(dname,'ES','XYZ') FROM dept;
++------------+---------------------------+
+| dname      | replace(dname,'ES','XYZ') |
++------------+---------------------------+
+| ACCOUNTING | ACCOUNTING                |
+| OPERATIONS | OPERATIONS                |
+| RESEARCH   | RXYZEARCH                 |
+| SALES      | SALXYZ                    |
++------------+---------------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT ename,job,replace(job,'MAN','WOMEN') FROM emp;
++--------+-----------+----------------------------+
+| ename  | job       | replace(job,'MAN','WOMEN') |
++--------+-----------+----------------------------+
+| SMITH  | CLERK     | CLERK                      |
+| ALLEN  | SALESMAN  | SALESWOMEN                 |
+| WARD   | SALESMAN  | SALESWOMEN                 |
+| JONES  | MANAGER   | WOMENAGER                  |
+| MARTIN | SALESMAN  | SALESWOMEN                 |
+| BLAKE  | MANAGER   | WOMENAGER                  |
+| CLARK  | MANAGER   | WOMENAGER                  |
+| SCOTT  | ANALYST   | ANALYST                    |
+| KING   | PRESIDENT | PRESIDENT                  |
+| TURNER | SALESMAN  | SALESWOMEN                 |
+| ADAMS  | CLERK     | CLERK                      |
+| JAMES  | CLERK     | CLERK                      |
+| FORD   | ANALYST   | ANALYST                    |
+| MILLER | CLERK     | CLERK                      |
++--------+-----------+----------------------------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT reverse('welcome'),repeat('welcome',3);
++--------------------+-----------------------+
+| reverse('welcome') | repeat('welcome',3)   |
++--------------------+-----------------------+
+| emoclew            | welcomewelcomewelcome |
++--------------------+-----------------------+
+1 row in set (0.01 sec)
+
+mysql> SELECT reverse('welcome'),repeat('welcome ',3);
++--------------------+--------------------------+
+| reverse('welcome') | repeat('welcome ',3)     |
++--------------------+--------------------------+
+| emoclew            | welcome welcome welcome  |
++--------------------+--------------------------+
+1 row in set (0.00 sec)
+
+-Write a query to find number of occurances of a character in any given string.
+
+  ananda 'a'  -> 3
+
+mysql> SELECT dname,length(dname)-length(replace(dname,'E','')) FROM dept;
++------------+---------------------------------------------+
+| dname      | length(dname)-length(replace(dname,'E','')) |
++------------+---------------------------------------------+
+| ACCOUNTING |                                           0 |
+| OPERATIONS |                                           1 |
+| RESEARCH   |                                           2 |
+| SALES      |                                           1 |
++------------+---------------------------------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT dname,replace(dname,'E','') FROM dept;
++------------+-----------------------+
+| dname      | replace(dname,'E','') |
++------------+-----------------------+
+| ACCOUNTING | ACCOUNTING            |
+| OPERATIONS | OPRATIONS             |
+| RESEARCH   | RSARCH                |
+| SALES      | SALS                  |
++------------+-----------------------+
+4 rows in set (0.00 sec)
+*************************************************************************************
+Date Functions
+--------------
+mysql> SELECT now(),current_date(),current_time(),curdate(),curtime();
++---------------------+----------------+----------------+------------+-----------+
+| now()               | current_date() | current_time() | curdate()  | curtime() |
++---------------------+----------------+----------------+------------+-----------+
+| 2022-09-02 09:55:18 | 2022-09-02     | 09:55:18       | 2022-09-02 | 09:55:18  |
++---------------------+----------------+----------------+------------+-----------+
+1 row in set (0.02 sec)
+
+DATE_ADD(<date>,INTERVAL <value> <TYPE>)
+----------------------------------------
+<TYPE> : day,month,year,week,minute,second,microsecond
+
+mysql> SELECT ename,hiredate,date_add(hiredate,INTERVAL 3 MONTH)
+    -> FROM emp
+    -> WHERE deptno=10;
++--------+------------+-------------------------------------+
+| ename  | hiredate   | date_add(hiredate,INTERVAL 3 MONTH) |
++--------+------------+-------------------------------------+
+| CLARK  | 1981-06-09 | 1981-09-09                          |
+| KING   | 1981-11-17 | 1982-02-17                          |
+| MILLER | 1982-01-23 | 1982-04-23                          |
++--------+------------+-------------------------------------+
+3 rows in set (0.06 sec)
+
+mysql> SELECT now(),date_add(now(),INTERVAL 30 MINUTE);
++---------------------+------------------------------------+
+| now()               | date_add(now(),INTERVAL 30 MINUTE) |
++---------------------+------------------------------------+
+| 2022-09-02 10:00:30 | 2022-09-02 10:30:30                |
++---------------------+------------------------------------+
+1 row in set (0.05 sec)
+
+mysql> SELECT now(),date_add(now(),INTERVAL -30 MINUTE);
++---------------------+-------------------------------------+
+| now()               | date_add(now(),INTERVAL -30 MINUTE) |
++---------------------+-------------------------------------+
+| 2022-09-02 10:00:59 | 2022-09-02 09:30:59                 |
++---------------------+-------------------------------------+
+1 row in set (0.00 sec)
+
+DATE_SUB(<date>,INTERVAL <value> <TYPE>)
+----------------------------------------
+<TYPE> : day,month,year,week,minute,second,microsecond
+
+mysql> SELECT ename,hiredate,date_sub(hiredate,INTERVAL 3 MONTH)
+    -> FROM emp
+    -> WHERE deptno=10;
++--------+------------+-------------------------------------+
+| ename  | hiredate   | date_sub(hiredate,INTERVAL 3 MONTH) |
++--------+------------+-------------------------------------+
+| CLARK  | 1981-06-09 | 1981-03-09                          |
+| KING   | 1981-11-17 | 1981-08-17                          |
+| MILLER | 1982-01-23 | 1981-10-23                          |
++--------+------------+-------------------------------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT now(),date_sub(now(),INTERVAL 30 MINUTE);
++---------------------+------------------------------------+
+| now()               | date_sub(now(),INTERVAL 30 MINUTE) |
++---------------------+------------------------------------+
+| 2022-09-02 10:03:55 | 2022-09-02 09:33:55                |
++---------------------+------------------------------------+
+1 row in set (0.00 sec)
+
+DATEDIFF(<date1>,<date2>)
+-------------------------
+mysql> SELECT ename,hiredate,datediff(now(),hiredate) FROM emp
+    -> WHERE deptno=10;
++--------+------------+--------------------------+
+| ename  | hiredate   | datediff(now(),hiredate) |
++--------+------------+--------------------------+
+| CLARK  | 1981-06-09 |                    15060 |
+| KING   | 1981-11-17 |                    14899 |
+| MILLER | 1982-01-23 |                    14832 |
++--------+------------+--------------------------+
+3 rows in set (0.07 sec)
+
+mysql> SELECT ename,hiredate,datediff(now(),hiredate) "Exp in days"
+    -> FROM emp;
++--------+------------+-------------+
+| ename  | hiredate   | Exp in days |
++--------+------------+-------------+
+| SMITH  | 1980-12-17 |       15234 |
+| ALLEN  | 1981-02-20 |       15169 |
+| WARD   | 1981-02-22 |       15167 |
+| JONES  | 1981-04-02 |       15128 |
+| MARTIN | 1981-09-28 |       14949 |
+| BLAKE  | 1981-05-01 |       15099 |
+| CLARK  | 1981-06-09 |       15060 |
+| SCOTT  | 1987-07-13 |       12835 |
+| KING   | 1981-11-17 |       14899 |
+| TURNER | 1981-09-08 |       14969 |
+| ADAMS  | 1987-07-13 |       12835 |
+| JAMES  | 1981-12-03 |       14883 |
+| FORD   | 1981-12-03 |       14883 |
+| MILLER | 1982-01-23 |       14832 |
++--------+------------+-------------+
+14 rows in set (0.00 sec)
+
+-Write a query to find your age in number of days
+
+mysql> SELECT datediff(now(),'1996-08-06');
++------------------------------+
+| datediff(now(),'1996-08-06') |
++------------------------------+
+|                         9523 |
++------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT datediff(now(),'1947-08-15') "Since Independence";
++--------------------+
+| Since Independence |
++--------------------+
+|              27412 |
++--------------------+
+1 row in set (0.00 sec)
+
+EXTRACT(<unit> FROM <date>)
+---------------------------
+<unit> : day, month, year, hour, minute, second, microsecond, week, quarter, ...
+
+mysql> SELECT ename,hiredate,extract(day from hiredate)"Day",extract(month from hiredate)"Month",
+    ->                       extract(year from hiredate) "Year"
+    -> FROM emp
+    -> WHERE deptno=10;
++--------+------------+------+-------+------+
+| ename  | hiredate   | Day  | Month | Year |
++--------+------------+------+-------+------+
+| CLARK  | 1981-06-09 |    9 |     6 | 1981 |
+| KING   | 1981-11-17 |   17 |    11 | 1981 |
+| MILLER | 1982-01-23 |   23 |     1 | 1982 |
++--------+------------+------+-------+------+
+3 rows in set (0.00 sec)
+
+-List employees who were hired in december month of any year.
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE extract(month from hiredate)=12;
++-------+-------+------------+
+| empno | ename | hiredate   |
++-------+-------+------------+
+|  7369 | SMITH | 1980-12-17 |
+|  7900 | JAMES | 1981-12-03 |
+|  7902 | FORD  | 1981-12-03 |
++-------+-------+------------+
+3 rows in set (0.00 sec)
+
+DATE_FORMAT(<date>,<format>)
+----------------------------
+<format> :%a,%b,%d,%m,%y,%i,%S,.....
+
+mysql> SELECT ename,hiredate,date_format(hiredate,'%a %d-%b-%Y %h:%i:%S %p')
+    -> FROM emp
+    -> WHERE deptno=10;
++--------+------------+-------------------------------------------------+
+| ename  | hiredate   | date_format(hiredate,'%a %d-%b-%Y %h:%i:%S %p') |
++--------+------------+-------------------------------------------------+
+| CLARK  | 1981-06-09 | Tue 09-Jun-1981 12:00:00 AM                     |
+| KING   | 1981-11-17 | Tue 17-Nov-1981 12:00:00 AM                     |
+| MILLER | 1982-01-23 | Sat 23-Jan-1982 12:00:00 AM                     |
++--------+------------+-------------------------------------------------+
+3 rows in set (0.00 sec)
+
+-List employees who were hired on monday.
+
+mysql> SELECT empno,ename,hiredate
+    -> FROM emp
+    -> WHERE date_format(hiredate,'%a')='Mon';
++-------+--------+------------+
+| empno | ename  | hiredate   |
++-------+--------+------------+
+|  7654 | MARTIN | 1981-09-28 |
+|  7788 | SCOTT  | 1987-07-13 |
+|  7876 | ADAMS  | 1987-07-13 |
++-------+--------+------------+
+3 rows in set (0.00 sec)
+
+TO_CHAR(): Oracle compatible function - Presently not supported.
+
+mysql> SELECT to_char(now(),'Day,DD-MONTH-YYYY HH:MI:SS PM');
++------------------------------------------------+
+| to_char(now(),'Day,DD-MONTH-YYYY HH:MI:SS PM') |
++------------------------------------------------+
+| Friday   ,02-September-2022 10:32:36 AM        |
++------------------------------------------------+
+1 row in set (0.00 sec)
+**********************************************************************************************
+CASE statement:
+---------------
+Simple CASE statement:
+----------------------
+  CASE <identifier>
+    WHEN <value_1> THEN <statements>
+    WHEN <value_2> THEN <statements>
+    ....
+    WHEN <value_n> THEN <statements>
+    ELSE <statements>
+  END
+
+mysql> SELECT empno,ename,job,
+    ->        CASE job
+    ->          WHEN 'PRESIDENT' THEN 'Chairman'
+    ->          WHEN 'ANALYST'   THEN 'Vice President'
+    ->          WHEN 'MANAGER'   THEN 'Sr. Manager'
+    ->        END "NEW JOB"
+    -> FROM emp;
++-------+--------+-----------+----------------+
+| empno | ename  | job       | NEW JOB        |
++-------+--------+-----------+----------------+
+|  7369 | SMITH  | CLERK     | NULL           |
+|  7499 | ALLEN  | SALESMAN  | NULL           |
+|  7521 | WARD   | SALESMAN  | NULL           |
+|  7566 | JONES  | MANAGER   | Sr. Manager    |
+|  7654 | MARTIN | SALESMAN  | NULL           |
+|  7698 | BLAKE  | MANAGER   | Sr. Manager    |
+|  7782 | CLARK  | MANAGER   | Sr. Manager    |
+|  7788 | SCOTT  | ANALYST   | Vice President |
+|  7839 | KING   | PRESIDENT | Chairman       |
+|  7844 | TURNER | SALESMAN  | NULL           |
+|  7876 | ADAMS  | CLERK     | NULL           |
+|  7900 | JAMES  | CLERK     | NULL           |
+|  7902 | FORD   | ANALYST   | Vice President |
+|  7934 | MILLER | CLERK     | NULL           |
++-------+--------+-----------+----------------+
+14 rows in set (0.06 sec)
+
+mysql> SELECT empno,ename,job,
+    ->        CASE job
+    ->          WHEN 'PRESIDENT' THEN 'Chairman'
+    ->          WHEN 'ANALYST'   THEN 'Vice President'
+    ->          WHEN 'MANAGER'   THEN 'Sr. Manager'
+    ->          ELSE 'Not Assigned'
+    ->        END "NEW JOB"
+    -> FROM emp;
++-------+--------+-----------+----------------+
+| empno | ename  | job       | NEW JOB        |
++-------+--------+-----------+----------------+
+|  7369 | SMITH  | CLERK     | Not Assigned   |
+|  7499 | ALLEN  | SALESMAN  | Not Assigned   |
+|  7521 | WARD   | SALESMAN  | Not Assigned   |
+|  7566 | JONES  | MANAGER   | Sr. Manager    |
+|  7654 | MARTIN | SALESMAN  | Not Assigned   |
+|  7698 | BLAKE  | MANAGER   | Sr. Manager    |
+|  7782 | CLARK  | MANAGER   | Sr. Manager    |
+|  7788 | SCOTT  | ANALYST   | Vice President |
+|  7839 | KING   | PRESIDENT | Chairman       |
+|  7844 | TURNER | SALESMAN  | Not Assigned   |
+|  7876 | ADAMS  | CLERK     | Not Assigned   |
+|  7900 | JAMES  | CLERK     | Not Assigned   |
+|  7902 | FORD   | ANALYST   | Vice President |
+|  7934 | MILLER | CLERK     | Not Assigned   |
++-------+--------+-----------+----------------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,
+    ->        CASE job
+    ->          WHEN 'PRESIDENT' THEN 'Chairman'
+    ->          WHEN 'ANALYST'   THEN 'Vice President'
+    ->          WHEN 'MANAGER'   THEN 'Sr. Manager'
+    ->          ELSE job
+    ->        END "NEW JOB"
+    -> FROM emp;
++-------+--------+-----------+----------------+
+| empno | ename  | job       | NEW JOB        |
++-------+--------+-----------+----------------+
+|  7369 | SMITH  | CLERK     | CLERK          |
+|  7499 | ALLEN  | SALESMAN  | SALESMAN       |
+|  7521 | WARD   | SALESMAN  | SALESMAN       |
+|  7566 | JONES  | MANAGER   | Sr. Manager    |
+|  7654 | MARTIN | SALESMAN  | SALESMAN       |
+|  7698 | BLAKE  | MANAGER   | Sr. Manager    |
+|  7782 | CLARK  | MANAGER   | Sr. Manager    |
+|  7788 | SCOTT  | ANALYST   | Vice President |
+|  7839 | KING   | PRESIDENT | Chairman       |
+|  7844 | TURNER | SALESMAN  | SALESMAN       |
+|  7876 | ADAMS  | CLERK     | CLERK          |
+|  7900 | JAMES  | CLERK     | CLERK          |
+|  7902 | FORD   | ANALYST   | Vice President |
+|  7934 | MILLER | CLERK     | CLERK          |
++-------+--------+-----------+----------------+
+14 rows in set (0.00 sec)
+
+-Write a query to display new salaries for employees. Salaries are hiked by certain percentage 
+ based on their jobs.
+ Ex: PRESIDENT -> 40%
+     ANALYST   -> 30%
+     MANAGER   -> 25%
+     others    -> 15%
+
+mysql> SELECT empno,ename,job,sal,
+    ->        CASE job
+    ->           WHEN 'PRESIDENT' THEN sal*1.4
+    ->           WHEN 'ANALYST'   THEN sal*1.3
+    ->           WHEN 'MANAGER'   THEN sal*1.25
+    ->           ELSE sal*1.15
+    ->        END "NEW SALARIES"
+    -> FROM emp;
++-------+--------+-----------+---------+--------------+
+| empno | ename  | job       | sal     | NEW SALARIES |
++-------+--------+-----------+---------+--------------+
+|  7369 | SMITH  | CLERK     |  800.00 |       920.00 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |      1840.00 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |      1437.50 |
+|  7566 | JONES  | MANAGER   | 2975.00 |      3718.75 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |      1437.50 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |      3562.50 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |      3062.50 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |      3900.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |      7000.00 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |      1725.00 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |      1265.00 |
+|  7900 | JAMES  | CLERK     |  950.00 |      1092.50 |
+|  7902 | FORD   | ANALYST   | 3000.00 |      3900.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |      1495.00 |
++-------+--------+-----------+---------+--------------+
+14 rows in set (0.00 sec)
+
+Searched CASE statement:
+------------------------
+CASE 
+  WHEN <condition_1> THEN <statements>
+  WHEN <condition_2> THEN <statements>
+  ...
+  WHEN <condition_n> THEN <statements>
+  ELSE <statements>
+END
+
+mysql> SELECT empno,ename,job,sal,
+    ->        CASE
+    ->          WHEN job='PRESIDENT' OR sal >= 3000 THEN 'Level-1'
+    ->          WHEN sal BETWEEN 2000 AND 2999      THEN 'Level-2'
+    ->          ELSE 'Level-3'
+    ->        END "LEVEL"
+    -> FROM emp;
++-------+--------+-----------+---------+---------+
+| empno | ename  | job       | sal     | LEVEL   |
++-------+--------+-----------+---------+---------+
+|  7369 | SMITH  | CLERK     |  800.00 | Level-3 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 | Level-3 |
+|  7521 | WARD   | SALESMAN  | 1250.00 | Level-3 |
+|  7566 | JONES  | MANAGER   | 2975.00 | Level-2 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | Level-3 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 | Level-2 |
+|  7782 | CLARK  | MANAGER   | 2450.00 | Level-2 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 | Level-1 |
+|  7839 | KING   | PRESIDENT | 5000.00 | Level-1 |
+|  7844 | TURNER | SALESMAN  | 1500.00 | Level-3 |
+|  7876 | ADAMS  | CLERK     | 1100.00 | Level-3 |
+|  7900 | JAMES  | CLERK     |  950.00 | Level-3 |
+|  7902 | FORD   | ANALYST   | 3000.00 | Level-1 |
+|  7934 | MILLER | CLERK     | 1300.00 | Level-3 |
++-------+--------+-----------+---------+---------+
+14 rows in set (0.00 sec)
+
+-Write a query to display appropriate message based on their salary.
+ Ex: If salary > 3000 display 'Good Salary'
+        salary = 3000 display 'Average Salary'
+        salary < 3000 display 'Poor Salary'
+
+mysql> SELECT empno,ename,job,sal,
+    ->        CASE
+    ->           WHEN sal > 3000 THEN 'Good Salary'
+    ->           WHEN sal = 3000 THEN 'Average Salary'
+    ->           WHEN sal < 3000 THEN 'Poor Salary'
+    ->        END "Salary Status"
+    -> FROM emp;
++-------+--------+-----------+---------+----------------+
+| empno | ename  | job       | sal     | Salary Status  |
++-------+--------+-----------+---------+----------------+
+|  7369 | SMITH  | CLERK     |  800.00 | Poor Salary    |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 | Poor Salary    |
+|  7521 | WARD   | SALESMAN  | 1250.00 | Poor Salary    |
+|  7566 | JONES  | MANAGER   | 2975.00 | Poor Salary    |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | Poor Salary    |
+|  7698 | BLAKE  | MANAGER   | 2850.00 | Poor Salary    |
+|  7782 | CLARK  | MANAGER   | 2450.00 | Poor Salary    |
+|  7788 | SCOTT  | ANALYST   | 3000.00 | Average Salary |
+|  7839 | KING   | PRESIDENT | 5000.00 | Good Salary    |
+|  7844 | TURNER | SALESMAN  | 1500.00 | Poor Salary    |
+|  7876 | ADAMS  | CLERK     | 1100.00 | Poor Salary    |
+|  7900 | JAMES  | CLERK     |  950.00 | Poor Salary    |
+|  7902 | FORD   | ANALYST   | 3000.00 | Average Salary |
+|  7934 | MILLER | CLERK     | 1300.00 | Poor Salary    |
++-------+--------+-----------+---------+----------------+
+14 rows in set (0.00 sec)
+
+-Try above query using Simple CASE statement.
+
+mysql> SELECT empno,ename,job,sal,
+    ->    CASE sign(sal-3000)
+    ->      WHEN 1 THEN 'Good Salary'
+    ->      WHEN 0 THEN 'Average Salary'
+    ->      WHEN -1 THEN 'Poor Salary'
+    ->    END "Salary Status"
+    -> FROM emp;
++-------+--------+-----------+---------+----------------+
+| empno | ename  | job       | sal     | Salary Status  |
++-------+--------+-----------+---------+----------------+
+|  7369 | SMITH  | CLERK     |  800.00 | Poor Salary    |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 | Poor Salary    |
+|  7521 | WARD   | SALESMAN  | 1250.00 | Poor Salary    |
+|  7566 | JONES  | MANAGER   | 2975.00 | Poor Salary    |
+|  7654 | MARTIN | SALESMAN  | 1250.00 | Poor Salary    |
+|  7698 | BLAKE  | MANAGER   | 2850.00 | Poor Salary    |
+|  7782 | CLARK  | MANAGER   | 2450.00 | Poor Salary    |
+|  7788 | SCOTT  | ANALYST   | 3000.00 | Average Salary |
+|  7839 | KING   | PRESIDENT | 5000.00 | Good Salary    |
+|  7844 | TURNER | SALESMAN  | 1500.00 | Poor Salary    |
+|  7876 | ADAMS  | CLERK     | 1100.00 | Poor Salary    |
+|  7900 | JAMES  | CLERK     |  950.00 | Poor Salary    |
+|  7902 | FORD   | ANALYST   | 3000.00 | Average Salary |
+|  7934 | MILLER | CLERK     | 1300.00 | Poor Salary    |
++-------+--------+-----------+---------+----------------+
+14 rows in set (0.00 sec)
+********************************************************************************************
+UPDATE using CASE statement:
+----------------------------
+mysql> use happyminds;
+Database changed
+
+mysql> delete from emp;
+Query OK, 14 rows affected (0.09 sec)
+
+mysql> set foreign_key_checks=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into emp
+    -> select * from company.emp;
+Query OK, 14 rows affected (0.20 sec)
+Records: 14  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UPDATE emp
+    -> SET sal=CASE job
+    ->           WHEN 'PRESIDENT' THEN sal*1.4
+    ->           WHEN 'ANALYST'   THEN sal*1.3
+    ->           WHEN 'MANAGER'   THEN sal*1.25
+    ->           ELSE sal*1.15
+    ->         END;
+Query OK, 14 rows affected (0.00 sec)
+Rows matched: 14  Changed: 14  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  920.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1840.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1437.50 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 3718.75 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1437.50 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 3562.50 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 3062.50 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3900.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 7000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1725.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1265.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 | 1092.50 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3900.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1495.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> set foreign_key_checks=1;
+Query OK, 0 rows affected (0.00 sec)
+************************************************************************************************
+Multirow/Group/Aggregate Functions:
+-----------------------------------
+MIN(),MAX(),AVG(),SUM(),COUNT()
+
+mysql> use company;
+Database changed
+
+mysql> use company;
+Database changed
+mysql> SELECT sal FROM emp;
++---------+
+| sal     |
++---------+
+|  800.00 |
+| 1600.00 |
+| 1250.00 |
+| 2975.00 |
+| 1250.00 |
+| 2850.00 |
+| 2450.00 |
+| 3000.00 |
+| 5000.00 |
+| 1500.00 |
+| 1100.00 |
+|  950.00 |
+| 3000.00 |
+| 1300.00 |
++---------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT min(sal) FROM emp;
++----------+
+| min(sal) |
++----------+
+|   800.00 |
++----------+
+1 row in set (0.02 sec)
+
+mysql> SELECT avg(sal),max(sal),sum(sal) FROM emp;
++-------------+----------+----------+
+| avg(sal)    | max(sal) | sum(sal) |
++-------------+----------+----------+
+| 2073.214286 |  5000.00 | 29025.00 |
++-------------+----------+----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT comm FROM emp;
++---------+
+| comm    |
++---------+
+|    NULL |
+|  300.00 |
+|  500.00 |
+|    NULL |
+| 1400.00 |
+|    NULL |
+|    NULL |
+|    NULL |
+|    NULL |
+|    0.00 |
+|    NULL |
+|    NULL |
+|    NULL |
+|    NULL |
++---------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT avg(comm) FROM emp;
++------------+
+| avg(comm)  |
++------------+
+| 550.000000 |
++------------+
+1 row in set (0.00 sec)
+
+-GROUP Functions IGNORE NULLs
+
+mysql> SELECT count(empno),count(*),count(comm) FROM emp;
++--------------+----------+-------------+
+| count(empno) | count(*) | count(comm) |
++--------------+----------+-------------+
+|           14 |       14 |           4 |
++--------------+----------+-------------+
+1 row in set (0.00 sec)
+
+-Find total salary spent on dept 30
+
+mysql> SELECT sum(sal)
+    -> FROM emp
+    -> WHERE deptno=30;
++----------+
+| sum(sal) |
++----------+
+|  9400.00 |
++----------+
+1 row in set (0.00 sec)
+
+-Find number of CLERK's in dept 20
+
+mysql> SELECT count(empno)
+    -> FROM emp
+    -> WHERE job='CLERK' AND deptno=20;
++--------------+
+| count(empno) |
++--------------+
+|            2 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT count(empno)
+    -> FROM emp
+    -> WHERE job='CLERK' AND deptno=20;
++--------------+
+| count(empno) |
++--------------+
+|            2 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT count('CLERK')
+    -> FROM emp
+    -> WHERE deptno=20;
++----------------+
+| count('CLERK') |
++----------------+
+|              5 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT 'CLERK' FROM emp;
++-------+
+| CLERK |
++-------+
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
++-------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT count('CLERK') FROM emp;
++----------------+
+| count('CLERK') |
++----------------+
+|             14 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT 'CLERK' FROM emp
+    -> WHERE deptno=20;
++-------+
+| CLERK |
++-------+
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
+| CLERK |
++-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT 1 FROM emp;
++---+
+| 1 |
++---+
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
+| 1 |
++---+
+14 rows in set (0.00 sec)
+
+mysql> SELECT count(1) FROM emp;
++----------+
+| count(1) |
++----------+
+|       14 |
++----------+
+1 row in set (0.00 sec)
+********************************************************************
+GROUP BY clause:
+----------------
+-GROUP BY clause is used to perform various aggregation in any column by GROUPing on column which
+ has shared/repeated data (Low Cardinality columns)
+
+-Ex:deptno,job,mgr & part of hiredate
+
+mysql> SET @@SQL_MODE='ONLY_FULL_GROUP_BY';
+
+Ex: To find total salary spent on each dept.
+
+mysql> SELECT sum(sal) FROM emp
+    -> GROUP BY deptno;
++----------+
+| sum(sal) |
++----------+
+|  8750.00 |
+| 10875.00 |
+|  9400.00 |
++----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT deptno,sum(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
++--------+----------+
+| deptno | sum(sal) |
++--------+----------+
+|     10 |  8750.00 |
+|     20 | 10875.00 |
+|     30 |  9400.00 |
++--------+----------+
+3 rows in set (0.00 sec)
+
+-Write a query to find number of employees in each JOB. Exclude PRESIDENT. Sort on number of
+ employees field.
+
+mysql> SELECT job,count(job) no_of_emps
+    -> FROM emp
+    -> WHERE job != 'PRESIDENT'
+    -> GROUP BY job
+    -> ORDER BY no_of_emps;
++----------+------------+
+| job      | no_of_emps |
++----------+------------+
+| ANALYST  |          2 |
+| MANAGER  |          3 |
+| CLERK    |          4 |
+| SALESMAN |          4 |
++----------+------------+
+4 rows in set (0.00 sec)
+
+-Write a query to list departments with average salary greater than 2000. List only deptno and
+ average salary.
+
+mysql> SELECT deptno,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
++--------+-------------+
+| deptno | avg(sal)    |
++--------+-------------+
+|     10 | 2916.666667 |
+|     20 | 2175.000000 |
+|     30 | 1566.666667 |
++--------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT deptno,avg(sal)
+    -> FROM emp
+    -> WHERE avg(sal) > 2000
+    -> GROUP BY deptno;
+ERROR 1111 (HY000): Invalid use of group function
+
+-For restricting GROUP/AGGREGATE functions WHERE clause MUST NOT BE USED !!!
+
+-WHERE clause is used for restricting NON-AGGREGATE columns(deptno,job,sal,....)
+
+HAVING clause:
+--------------
+-For restricting GROUP/AGGREGATE functions HAVING clause MUST BE USED !!!
+
+-Place HAVING clause AFTER GROUP BY clause.
+
+mysql> SELECT deptno,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno
+    -> HAVING avg(sal) > 2000;
++--------+-------------+
+| deptno | avg(sal)    |
++--------+-------------+
+|     10 | 2916.666667 |
+|     20 | 2175.000000 |
++--------+-------------+
+2 rows in set (0.00 sec)
+
+-Write a query to find number of employees and total salary spent on each dept. Exclude any dept
+ with less than 2 employees. Also exclude dept 10. Sort on total salary field.
+
+mysql> SELECT deptno,count(deptno) no_of_emps,sum(sal) total_salary
+    -> FROM emp
+    -> WHERE deptno != 10
+    -> GROUP BY deptno
+    -> HAVING count(deptno) >= 2
+    -> ORDER BY total_salary;
++--------+------------+--------------+
+| deptno | no_of_emps | total_salary |
++--------+------------+--------------+
+|     30 |          6 |      9400.00 |
+|     20 |          5 |     10875.00 |
++--------+------------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT deptno,count(deptno) no_of_emps,sum(sal) total_salary
+    -> FROM emp
+    -> GROUP BY deptno
+    -> HAVING count(deptno) >= 2 AND deptno != 10
+    -> ORDER BY total_salary;
++--------+------------+--------------+
+| deptno | no_of_emps | total_salary |
++--------+------------+--------------+
+|     30 |          6 |      9400.00 |
+|     20 |          5 |     10875.00 |
++--------+------------+--------------+
+2 rows in set (0.07 sec)
+
+mysql> SELECT deptno,ename,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
++--------+-------+-------------+
+| deptno | ename | avg(sal)    |
++--------+-------+-------------+
+|     10 | CLARK | 2916.666667 |
+|     20 | SMITH | 2175.000000 |
+|     30 | ALLEN | 1566.666667 |
++--------+-------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> SET @@SQL_MODE='ONLY_FULL_GROUP_BY';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT deptno,ename,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
+ERROR 1055 (42000): 'company.emp.ename' isn't in GROUP BY
+
+-In SELECT list include only NON-AGGREGATE columns which are in GROUP BY clause.
+
+-Don't SELECT any NON-AGGREGATE column which is not part of GROUP BY clause.
+
+Grouping on more than 1 column:GROUP within GROUP
+-------------------------------------------------
+Ex: To find number of employees and total salary in each JOB within the DEPTNO.
+
+mysql> SELECT deptno,job,count(*) no_of_emps,sum(sal) total_salary
+    -> FROM emp
+    -> GROUP BY deptno,job
+    -> ORDER BY deptno,job;
++--------+-----------+------------+--------------+
+| deptno | job       | no_of_emps | total_salary |
++--------+-----------+------------+--------------+
+|     10 | CLERK     |          1 |      1300.00 |
+|     10 | MANAGER   |          1 |      2450.00 |
+|     10 | PRESIDENT |          1 |      5000.00 |
+|     20 | ANALYST   |          2 |      6000.00 |
+|     20 | CLERK     |          2 |      1900.00 |
+|     20 | MANAGER   |          1 |      2975.00 |
+|     30 | CLERK     |          1 |       950.00 |
+|     30 | MANAGER   |          1 |      2850.00 |
+|     30 | SALESMAN  |          4 |      5600.00 |
++--------+-----------+------------+--------------+
+9 rows in set (0.07 sec)
+
+-Order of grouping is not relevant.
+**********************************************************************************
+-Write a query to find number of employees working under each manager.
+
+mysql> SELECT mgr,count(mgr) no_of_emps
+    -> FROM emp
+    -> GROUP BY mgr;
++------+------------+
+| mgr  | no_of_emps |
++------+------------+
+| NULL |          0 |
+| 7566 |          2 |
+| 7698 |          5 |
+| 7782 |          1 |
+| 7788 |          1 |
+| 7839 |          3 |
+| 7902 |          1 |
++------+------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT mgr,count(mgr) no_of_emps
+    -> FROM emp
+    -> WHERE mgr IS NOT NULL
+    -> GROUP BY mgr;
++------+------------+
+| mgr  | no_of_emps |
++------+------------+
+| 7566 |          2 |
+| 7698 |          5 |
+| 7782 |          1 |
+| 7788 |          1 |
+| 7839 |          3 |
+| 7902 |          1 |
++------+------------+
+6 rows in set (0.00 sec)
+
+-Write a query to find how many employees joined the company in each year. Sort on year.
+
+mysql> SELECT extract(year from hiredate) year,count(*) no_of_emps
+    -> FROM emp
+    -> GROUP BY extract(year from hiredate)
+    -> ORDER BY year;
++------+------------+
+| year | no_of_emps |
++------+------------+
+| 1980 |          1 |
+| 1981 |         10 |
+| 1982 |          1 |
+| 1987 |          2 |
++------+------------+
+4 rows in set (0.05 sec)
+***********************************************************************************
+Joins:
+------
+-Joins are used for fetching data from multiple tables.
+-Normally after Normalization, data would be present in many different tables.
+-Based on our requirements, we need to fetch data from these multiple tables.
+
+Types of Joins:
+---------------
+1. INNER JOINS : Tables to be joined must have comparitive data.
+2. OUTER JOINS : Tables are joined to fetch MATCHED and UN-MATCHED data.
+3. CROSS JOINS : Returns Cartesian Product which is rarely used.
+
+INNER JOINS:
+------------
+-EQUI JOIN : Tables to be joined are compared using "=" operator. Data must be exactly matching.
+-SELF JOIN : It is EQUI join wherein table is joined to itself
+-NON-EQUI JOIN : Tables are joined by comparing data using other than "=" operator
+
+Guidelines while joining tables:
+--------------------------------
+-Avoid using JOIN conditions in WHERE clause. Use ANSI-SQL standard joins.
+
+-While SELECTing columns from multiple tables, it is always advisable to using either table name
+ or correlation name as qualifier for the columns. However these qualifier are mandotory if you
+ are SELECTing columns which has same name in both the tables.
+
+EQUI-JOIN:
+----------
+
+mysql> UPDATE emp SET deptno=NULL WHERE empno=7934;
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |   NULL |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+Ex: To list department details of all the employees.
+
+-Using join condition in WHERE clause and using table name as qualifier for columns.
+
+mysql> SELECT emp.empno,emp.ename,emp.job,emp.sal,emp.deptno,
+    ->        dept.deptno,dept.dname,dept.loc
+    -> FROM emp,dept
+    -> WHERE emp.deptno=dept.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+13 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,emp.deptno,dept.deptno,dname,loc
+    -> FROM emp,dept
+    -> WHERE emp.deptno=dept.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+13 rows in set (0.00 sec)
+
+-Example using ANSI SQL syntax and using correlation name as qualifier for the columns.
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e INNER JOIN dept d
+    -> ON e.deptno=d.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+13 rows in set (0.00 sec)
+
+-In above example INNER keyword is optional.
+
+SELF JOIN:
+----------
+Ex: To list employee details along with their manager details.
+
+mysql> SELECT e.ename empname,e.sal empsal,m.ename mgrname,m.sal mgrsal
+    -> FROM emp e INNER JOIN emp m
+    -> ON e.mgr=m.empno;
++---------+---------+---------+---------+
+| empname | empsal  | mgrname | mgrsal  |
++---------+---------+---------+---------+
+| SMITH   |  800.00 | FORD    | 3000.00 |
+| ALLEN   | 1600.00 | BLAKE   | 2850.00 |
+| WARD    | 1250.00 | BLAKE   | 2850.00 |
+| JONES   | 2975.00 | KING    | 5000.00 |
+| MARTIN  | 1250.00 | BLAKE   | 2850.00 |
+| BLAKE   | 2850.00 | KING    | 5000.00 |
+| CLARK   | 2450.00 | KING    | 5000.00 |
+| SCOTT   | 3000.00 | JONES   | 2975.00 |
+| TURNER  | 1500.00 | BLAKE   | 2850.00 |
+| ADAMS   | 1100.00 | SCOTT   | 3000.00 |
+| JAMES   |  950.00 | BLAKE   | 2850.00 |
+| FORD    | 3000.00 | JONES   | 2975.00 |
+| MILLER  | 1300.00 | CLARK   | 2450.00 |
++---------+---------+---------+---------+
+13 rows in set (0.00 sec)
+
+NON-EQUI JOIN
+-------------
+Ex: To fetch grade for each employee we need to compare his salary between losal and hisal of
+salgrade table.
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |   NULL |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+
+mysql> SELECT * FROM salgrade;
++-------+-------+-------+
+| GRADE | LOSAL | HISAL |
++-------+-------+-------+
+|     1 |   700 |  1200 |
+|     2 |  1201 |  1400 |
+|     3 |  1401 |  2000 |
+|     4 |  2001 |  3000 |
+|     5 |  3001 |  9999 |
++-------+-------+-------+
+5 rows in set (0.08 sec)
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,s.grade,e.deptno
+    -> FROM emp e INNER JOIN salgrade s
+    -> ON e.sal BETWEEN s.losal AND s.hisal;
++-------+--------+-----------+---------+-------+--------+
+| empno | ename  | job       | sal     | grade | deptno |
++-------+--------+-----------+---------+-------+--------+
+|  7369 | SMITH  | CLERK     |  800.00 |     1 |     20 |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     3 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     2 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     4 |     20 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     2 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     4 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     4 |     10 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     4 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     5 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     3 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     1 |     20 |
+|  7900 | JAMES  | CLERK     |  950.00 |     1 |     30 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     4 |     20 |
+|  7934 | MILLER | CLERK     | 1300.00 |     2 |   NULL |
++-------+--------+-----------+---------+-------+--------+
+14 rows in set (0.00 sec)
+********************************************************************************************
+OUTER Joins:
+------------
+LEFT OUTER JOIN
+---------------
+-Fetches all the rows including unmatched rows from LEFT table and only matched rows from RIGHT table.
+
+-Ex: To list department details for all the employees and also to list employee details for whom
+     no department has been assigned.
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e LEFT OUTER JOIN dept d
+    -> ON e.deptno=d.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |   NULL | NULL       | NULL     |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+14 rows in set (0.04 sec)
+
+RIGHT OUTER JOIN:
+-----------------
+-Fetches all the rows including unmatched rows from RIGHT table and only matched rows from LEFT  table.
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e RIGHT OUTER JOIN dept d
+    -> ON e.deptno=d.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  NULL | NULL   | NULL      |    NULL |   NULL |     40 | OPERATIONS | BOSTON   |
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+14 rows in set (0.00 sec)
+
+-Fetches dept 40 details also in which no employees are working.
+
+FULL OUTER JOINs are not supported in MySQL and MariaDB
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e FULL OUTER JOIN dept d
+    -> ON e.deptno=d.deptno;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FULL OUTER JOIN dept d
+ON e.deptno=d.deptno' at line 2
+
+CROSS JOIN:
+-----------
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e CROSS JOIN dept d;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     40 | OPERATIONS | BOSTON   |
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     30 | SALES      | CHICAGO  |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     40 | OPERATIONS | BOSTON   |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     30 | SALES      | CHICAGO  |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     40 | OPERATIONS | BOSTON   |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     20 | RESEARCH   | DALLAS   |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     30 | SALES      | CHICAGO  |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     40 | OPERATIONS | BOSTON   |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     30 | SALES      | CHICAGO  |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     40 | OPERATIONS | BOSTON   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     30 | SALES      | CHICAGO  |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     40 | OPERATIONS | BOSTON   |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     30 | SALES      | CHICAGO  |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     10 | ACCOUNTING | NEW YORK |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     40 | OPERATIONS | BOSTON   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     40 | OPERATIONS | BOSTON   |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     30 | SALES      | CHICAGO  |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |     10 | ACCOUNTING | NEW YORK |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |     40 | OPERATIONS | BOSTON   |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |     20 | RESEARCH   | DALLAS   |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |     30 | SALES      | CHICAGO  |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+56 rows in set (0.00 sec)
+******************************************************************************************
+Joining more than 2 tables:
+---------------------------
+-While joining 'N' number of tables, you have to use 'N-1' number of join conditions.
+
+Ex: Joining EMP,DEPT & SALGRADE tables
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,s.grade,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e INNER JOIN dept d
+    -> ON e.deptno=d.deptno
+    -> INNER JOIN salgrade s
+    -> ON e.sal BETWEEN s.losal AND s.hisal;
++-------+--------+-----------+---------+-------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | grade | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+-------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     1 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     3 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     2 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     4 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     2 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     4 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     4 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     4 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     5 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     3 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     1 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     1 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     4 |     20 |     20 | RESEARCH   | DALLAS   |
++-------+--------+-----------+---------+-------+--------+--------+------------+----------+
+13 rows in set (0.00 sec)
+***************************************************************************************
+-Write a query to join CUSTOMER, INVOICE & LINEITEM tables.
+
+mysql> SELECT i.invoiceno,l.lineitemno,c.custno,c.name,c.addr,l.part,l.qty,l.amt
+    -> FROM invoice i inner join customer c
+    -> on i.custno=c.custno
+    -> inner join lineitem l
+    -> on i.invoiceno=l.invoiceno
+    -> order by i.invoiceno,l.lineitemno;
++-----------+------------+--------+-------+---------+-------+------+--------+
+| invoiceno | lineitemno | custno | name  | addr    | part  | qty  | amt    |
++-----------+------------+--------+-------+---------+-------+------+--------+
+|      1001 |          1 |     43 | Jones | 121 1st | Screw |  200 |   2.00 |
+|      1001 |          2 |     43 | Jones | 121 1st | Nut   |  300 |   2.25 |
+|      1001 |          3 |     43 | Jones | 121 1st | Washr |  100 |   0.75 |
+|      1002 |          1 |     55 | Smith | 222 2nd | Motor |    1 |  52.00 |
+|      1002 |          2 |     55 | Smith | 222 2nd | Brace |    5 |  44.44 |
+|      1003 |          1 |     43 | Jones | 121 1st | Saw   |   10 | 121.00 |
++-----------+------------+--------+-------+---------+-------+------+--------+
+6 rows in set (0.00 sec)
+******************************************************************************************
+SET operators:
+--------------
+-SET operators are used for combining data from multiple sets and extracting required data
+
+-While comparing multiple sets, number of columns, order of columns and datatype must be
+ compatible.
+
+-For sorting you need to place ORDER BY clause for the last statement.
+
+mysql> USE COMPANY;
+Database changed
+
+mysql> UPDATE emp SET deptno=10 WHERE empno=7934;
+Query OK, 1 row affected (0.06 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+UNION ALL: Returns data from both the sets including duplicates.
+
+mysql> SELECT job FROM emp WHERE deptno=10;
++-----------+
+| job       |
++-----------+
+| MANAGER   |
+| PRESIDENT |
+| CLERK     |
++-----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT job FROM emp WHERE deptno=20;
++---------+
+| job     |
++---------+
+| CLERK   |
+| MANAGER |
+| ANALYST |
+| CLERK   |
+| ANALYST |
++---------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT job FROM emp WHERE deptno=10
+    -> UNION ALL
+    -> SELECT job FROM emp WHERE deptno=20;
++-----------+
+| job       |
++-----------+
+| MANAGER   |
+| PRESIDENT |
+| CLERK     |
+| CLERK     |
+| MANAGER   |
+| ANALYST   |
+| CLERK     |
+| ANALYST   |
++-----------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT job FROM emp WHERE deptno=10
+    -> UNION ALL
+    -> SELECT job FROM emp WHERE deptno=20
+    -> ORDER BY job;
++-----------+
+| job       |
++-----------+
+| ANALYST   |
+| ANALYST   |
+| CLERK     |
+| CLERK     |
+| CLERK     |
+| MANAGER   |
+| MANAGER   |
+| PRESIDENT |
++-----------+
+8 rows in set (0.00 sec)
+
+UNION: Returns DISTINCT data from both the SETS. DISTINCT of UNION ALL
+------
+mysql> SELECT job FROM emp WHERE deptno=10
+    -> UNION
+    -> SELECT job FROM emp WHERE deptno=20;
++-----------+
+| job       |
++-----------+
+| MANAGER   |
+| PRESIDENT |
+| CLERK     |
+| ANALYST   |
++-----------+
+4 rows in set (0.00 sec)
+*****************************************************************************************
+-Implement FULL OUTER JOIN using UNION operator.
+
+mysql> UPDATE emp SET deptno=null WHERE empno=7934;
+Query OK, 1 row affected (0.09 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e LEFT OUTER JOIN dept d
+    -> ON e.deptno=d.deptno
+    -> UNION
+    -> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.deptno,d.dname,d.loc
+    -> FROM emp e RIGHT OUTER JOIN dept d
+    -> ON e.deptno=d.deptno;
++-------+--------+-----------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |     20 | RESEARCH   | DALLAS   |
+|  7934 | MILLER | CLERK     | 1300.00 |   NULL |   NULL | NULL       | NULL     |
+|  NULL | NULL   | NULL      |    NULL |   NULL |     40 | OPERATIONS | BOSTON   |
++-------+--------+-----------+---------+--------+--------+------------+----------+
+15 rows in set (0.00 sec)
+
+mysql> UPDATE emp SET deptno=10 WHERE empno=7934;
+Query OK, 1 row affected (0.09 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+***********************************************************************************************
+NESTED QUERIES/SUB-QUERIES
+--------------------------
+-Sub-Query is a SELECT statement NESTED within another statement.
+
+-What is use of Sub-Queries?
+ *Sub-Queries are used for searching data based on unknown/derived values in search conditions.
+ *Many complex queries can be solved using these sub-queries.
+ *Sub-Query would be executed first and output of sub-query will be input to Outer Query.
+
+-Types of Sub-Queries
+ *Single Row Sub-query
+ *Multi Row Sub-query - Multirow comparison operators: IN, NOT IN, ANY, ALL, EXISTS, NOT EXISTS
+ *Correlated Sub-query
+
+Single Row Sub-Queries:
+-----------------------
+-These sub-queries return single row.
+
+Ex:To list employees who are earning salary greater than average salary of EMP table.
+
+mysql> SELECT empno,ename,sal
+    -> FROM emp
+    -> WHERE sal > (SELECT avg(sal) FROM emp);
++-------+-------+---------+
+| empno | ename | sal     |
++-------+-------+---------+
+|  7566 | JONES | 2975.00 |
+|  7698 | BLAKE | 2850.00 |
+|  7782 | CLARK | 2450.00 |
+|  7788 | SCOTT | 3000.00 |
+|  7839 | KING  | 5000.00 |
+|  7902 | FORD  | 3000.00 |
++-------+-------+---------+
+6 rows in set (0.07 sec)
+
+mysql> SELECT avg(sal) FROM emp;
++-------------+
+| avg(sal)    |
++-------------+
+| 2073.214286 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT empno,ename,sal
+    -> FROM emp
+    -> WHERE sal > 2073;
++-------+-------+---------+
+| empno | ename | sal     |
++-------+-------+---------+
+|  7566 | JONES | 2975.00 |
+|  7698 | BLAKE | 2850.00 |
+|  7782 | CLARK | 2450.00 |
+|  7788 | SCOTT | 3000.00 |
+|  7839 | KING  | 5000.00 |
+|  7902 | FORD  | 3000.00 |
++-------+-------+---------+
+6 rows in set (0.00 sec)
+######################################## DAY-4 ###############################################
+-Write a query to list employees who are directly reporting to KING.
+
+mysql> SELECT empno,ename,mgr FROM emp
+    -> WHERE mgr=(SELECT empno FROM emp
+    ->            WHERE ename='KING');
++-------+-------+------+
+| empno | ename | mgr  |
++-------+-------+------+
+|  7566 | JONES | 7839 |
+|  7698 | BLAKE | 7839 |
+|  7782 | CLARK | 7839 |
++-------+-------+------+
+3 rows in set (0.06 sec)
+
+-Write a query to list employees who are having same job as MILLER. Do not display MILLER record.
+ Sort on their names.
+
+mysql> SELECT empno,ename,job
+    -> FROM emp
+    -> WHERE job=(SELECT job FROM emp
+    ->            WHERE ename='MILLER');
++-------+--------+-------+
+| empno | ename  | job   |
++-------+--------+-------+
+|  7369 | SMITH  | CLERK |
+|  7876 | ADAMS  | CLERK |
+|  7900 | JAMES  | CLERK |
+|  7934 | MILLER | CLERK |
++-------+--------+-------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job
+    -> FROM emp
+    -> WHERE job=(SELECT job FROM emp
+    ->            WHERE ename='MILLER')
+    -> AND ename != 'MILLER'
+    -> ORDER BY ename;
++-------+-------+-------+
+| empno | ename | job   |
++-------+-------+-------+
+|  7876 | ADAMS | CLERK |
+|  7900 | JAMES | CLERK |
+|  7369 | SMITH | CLERK |
++-------+-------+-------+
+3 rows in set (0.03 sec)
+
+-List employees who are earning salary greater than JONES.
+
+mysql> SELECT empno,ename,sal
+    -> FROM emp
+    -> WHERE sal > (SELECT sal FROM emp
+    ->              WHERE ename='JONES');
++-------+-------+---------+
+| empno | ename | sal     |
++-------+-------+---------+
+|  7788 | SCOTT | 3000.00 |
+|  7839 | KING  | 5000.00 |
+|  7902 | FORD  | 3000.00 |
++-------+-------+---------+
+3 rows in set (0.11 sec)
+
+-List employees who are earning salary greater than averages salary of SALES dept.
+ *Don't use job='SALESMAN'
+ *Don't hardcode deptno
+ *Try without JOINs
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > (SELECT avg(sal) FROM emp
+    ->              WHERE deptno=(SELECT deptno FROM dept
+    ->                            WHERE dname='SALES'));
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7499 | ALLEN | SALESMAN  | 1600.00 |     30 |
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+7 rows in set (0.15 sec)
+
+mysql> SELECT deptno FROM dept
+    -> WHERE dname='SALES';
++--------+
+| deptno |
++--------+
+|     30 |
++--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT avg(sal) FROM emp
+    -> WHERE deptno=30;
++-------------+
+| avg(sal)    |
++-------------+
+| 1566.666667 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > 1567;
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7499 | ALLEN | SALESMAN  | 1600.00 |     30 |
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+7 rows in set (0.00 sec)
+
+-Solving above query using JOIN in sub-query
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > (SELECT avg(e.sal)
+    ->              FROM emp e INNER JOIN dept d
+    ->              ON e.deptno=d.deptno
+    ->              WHERE d.dname='SALES');
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7499 | ALLEN | SALESMAN  | 1600.00 |     30 |
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7698 | BLAKE | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+7 rows in set (0.00 sec) 
+
+-Write a query to list departments with average salary greater than average salary of dept 30.
+ List only deptno and average salary.
+
+mysql> SELECT deptno,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno
+    -> HAVING avg(sal) > (SELECT avg(sal) FROM emp
+    ->                    WHERE deptno=30);
++--------+-------------+
+| deptno | avg(sal)    |
++--------+-------------+
+|     10 | 2916.666667 |
+|     20 | 2175.000000 |
++--------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT deptno,avg(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
++--------+-------------+
+| deptno | avg(sal)    |
++--------+-------------+
+|     10 | 2916.666667 |
+|     20 | 2175.000000 |
+|     30 | 1566.666667 |
++--------+-------------+
+3 rows in set (0.03 sec)
+
+mysql> SELECT avg(sal) FROM emp
+    -> WHERE deptno=30;
++-------------+
+| avg(sal)    |
++-------------+
+| 1566.666667 |
++-------------+
+1 row in set (0.00 sec)	
+
+-Display the department details in which most employees are working. List deptno,dname and loc.
+
+-List employees details to whom most employees are reporting to.
+
+Multi-row Sub-queries:
+----------------------
+ -Sub-query returns more than 1 row. Hence we need to use multirow comparison operators.
+ -IN, NOT IN, ANY, ALL, EXISTS & NOT EXISTS.
+
+-List employees who are managing atleast 1 employee.
+
+mysql> SELECT empno,ename,mgr
+    -> FROM emp
+    -> WHERE empno IN (SELECT mgr FROM emp);
++-------+-------+------+
+| empno | ename | mgr  |
++-------+-------+------+
+|  7566 | JONES | 7839 |
+|  7698 | BLAKE | 7839 |
+|  7782 | CLARK | 7839 |
+|  7788 | SCOTT | 7566 |
+|  7839 | KING  | NULL |
+|  7902 | FORD  | 7566 |
++-------+-------+------+
+6 rows in set (0.07 sec)
+
+-List employees who are not managing anyone.
+
+mysql> SELECT empno,ename,mgr
+    -> FROM emp
+    -> WHERE empno NOT IN (SELECT mgr FROM emp);
+Empty set (0.12 sec)
+
+-In case of NOT IN operator if sub-query returns even a single NULL, outer query fails.
+
+mysql> SELECT empno,ename,mgr
+    -> FROM emp
+    -> WHERE empno NOT IN (SELECT mgr FROM emp
+    ->                     WHERE mgr IS NOT NULL);
++-------+--------+------+
+| empno | ename  | mgr  |
++-------+--------+------+
+|  7369 | SMITH  | 7902 |
+|  7499 | ALLEN  | 7698 |
+|  7521 | WARD   | 7698 |
+|  7654 | MARTIN | 7698 |
+|  7844 | TURNER | 7698 |
+|  7876 | ADAMS  | 7788 |
+|  7900 | JAMES  | 7698 |
+|  7934 | MILLER | 7782 |
++-------+--------+------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > (SELECT sal FROM emp
+    ->              WHERE deptno=30);
+ERROR 1242 (21000): Subquery returns more than 1 row
+
+-Above query fails since sub-query returns more than 1 row whereas we are having ">" operator 
+ which is single row comparison operator.
+
+mysql> SELECT sal FROM emp
+    -> WHERE deptno=30;
++---------+
+| sal     |
++---------+
+| 1600.00 |
+| 1250.00 |
+| 1250.00 |
+| 2850.00 |
+| 1500.00 |
+|  950.00 |
++---------+
+6 rows in set (0.00 sec)
+
+ANY operator:
+-------------
+-In this case Sub-query returns multiple rows and outer query would compare each employees salary
+ with salaries returned by sub-query. If salary is greater than "ANY" of salaries returned by
+ sub-query, row would be displayed else discarded.
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > ANY(SELECT sal FROM emp
+    ->                 WHERE deptno=30);
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+12 rows in set (0.00 sec)
+
+-Alternate query
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > (SELECT min(sal) FROM emp
+    ->              WHERE deptno=30);
++-------+--------+-----------+---------+--------+
+| empno | ename  | job       | sal     | deptno |
++-------+--------+-----------+---------+--------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 |
++-------+--------+-----------+---------+--------+
+12 rows in set (0.00 sec)
+
+ALL operator:
+-------------
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > ALL(SELECT sal FROM emp
+    ->                 WHERE deptno=30);
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal > (SELECT max(sal) FROM emp
+    ->              WHERE deptno=30);
++-------+-------+-----------+---------+--------+
+| empno | ename | job       | sal     | deptno |
++-------+-------+-----------+---------+--------+
+|  7566 | JONES | MANAGER   | 2975.00 |     20 |
+|  7788 | SCOTT | ANALYST   | 3000.00 |     20 |
+|  7839 | KING  | PRESIDENT | 5000.00 |     10 |
+|  7902 | FORD  | ANALYST   | 3000.00 |     20 |
++-------+-------+-----------+---------+--------+
+4 rows in set (0.00 sec)
+*************************************************************************
+-List employees with least salary in each dept.
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal IN (SELECT min(sal) FROM emp
+    ->               GROUP BY deptno);
++-------+--------+-------+---------+--------+
+| empno | ename  | job   | sal     | deptno |
++-------+--------+-------+---------+--------+
+|  7369 | SMITH  | CLERK |  800.00 |     20 |
+|  7900 | JAMES  | CLERK |  950.00 |     30 |
+|  7934 | MILLER | CLERK | 1300.00 |     10 |
++-------+--------+-------+---------+--------+
+3 rows in set (0.03 sec)
+
+-Above query is incorrect.
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UPDATE emp SET sal=1300 WHERE empno=7902;
+Query OK, 1 row affected (0.10 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal IN (SELECT min(sal) FROM emp
+    ->               GROUP BY deptno);
++-------+--------+---------+---------+--------+
+| empno | ename  | job     | sal     | deptno |
++-------+--------+---------+---------+--------+
+|  7369 | SMITH  | CLERK   |  800.00 |     20 |
+|  7900 | JAMES  | CLERK   |  950.00 |     30 |
+|  7902 | FORD   | ANALYST | 1300.00 |     20 |
+|  7934 | MILLER | CLERK   | 1300.00 |     10 |
++-------+--------+---------+---------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT min(sal) FROM emp
+    -> GROUP BY deptno;
++----------+
+| min(sal) |
++----------+
+|  1300.00 |
+|   800.00 |
+|   950.00 |
++----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE sal IN (1300,800,950);
++-------+--------+---------+---------+--------+
+| empno | ename  | job     | sal     | deptno |
++-------+--------+---------+---------+--------+
+|  7369 | SMITH  | CLERK   |  800.00 |     20 |
+|  7900 | JAMES  | CLERK   |  950.00 |     30 |
+|  7902 | FORD   | ANALYST | 1300.00 |     20 |
+|  7934 | MILLER | CLERK   | 1300.00 |     10 |
++-------+--------+---------+---------+--------+
+4 rows in set (0.00 sec)
+
+-In above case each employees salary would be compared with minimum salary of each dept. 
+-Irrespective of employees deptno, if his salary is matching with any of the minimum salary his
+ record would be displayed which is wrong.
+
+-Multi-Row Multi-Column sub-queries
+
+mysql> SELECT empno,ename,job,sal,deptno
+    -> FROM emp
+    -> WHERE(deptno,sal) IN (SELECT deptno,min(sal) FROM emp
+    ->                       GROUP BY deptno);
++-------+--------+-------+---------+--------+
+| empno | ename  | job   | sal     | deptno |
++-------+--------+-------+---------+--------+
+|  7369 | SMITH  | CLERK |  800.00 |     20 |
+|  7900 | JAMES  | CLERK |  950.00 |     30 |
+|  7934 | MILLER | CLERK | 1300.00 |     10 |
++-------+--------+-------+---------+--------+
+3 rows in set (0.02 sec)
+
+mysql> SELECT deptno,min(sal) FROM emp
+    -> GROUP BY deptno;
++--------+----------+
+| deptno | min(sal) |
++--------+----------+
+|     10 |  1300.00 |
+|     20 |   800.00 |
+|     30 |   950.00 |
++--------+----------+
+3 rows in set (0.00 sec)
+
+-In many other RDBMS Multi-Column Sub-query is not supported.
+
+-In such case we can solve using Correlated Sub-queries
+
+Correlated Sub-Queries:
+-----------------------
+
+mysql> SELECT e1.empno,e1.ename,e1.sal,e1.deptno
+    -> FROM emp e1
+    -> WHERE e1.sal = (SELECT min(e2.sal) FROM emp e2
+    ->                 WHERE e2.deptno=e1.deptno);
++-------+--------+---------+--------+
+| empno | ename  | sal     | deptno |
++-------+--------+---------+--------+
+|  7369 | SMITH  |  800.00 |     20 |
+|  7900 | JAMES  |  950.00 |     30 |
+|  7934 | MILLER | 1300.00 |     10 |
++-------+--------+---------+--------+
+3 rows in set (0.03 sec)
+
+mysql> ROLLBACK;
+Query OK, 0 rows affected (0.11 sec)
+
+Explanation:
+------------
+For first row in EMP table:
+---------------------------
+         7369     SMITH  800.00    20    --This record is displayed
+SELECT e1.empno,e1.ename,e1.sal,e1.deptno
+FROM emp e1
+WHERE e1.sal = (SELECT min(e2.sal) FROM emp e2
+                WHERE e2.deptno=e1.deptno);
+       800   =    800(T)       = 20
+
+For second row in EMP table:
+---------------------------
+         7499    ALLEN   1600.00   30    --This record is discarded
+SELECT e1.empno,e1.ename,e1.sal,e1.deptno
+FROM emp e1
+WHERE e1.sal = (SELECT min(e2.sal) FROM emp e2
+                WHERE e2.deptno=e1.deptno);
+       1600  =   950(F)	       = 30
+   
+-Similarly for rest of the records in EMP table.
+
+-In case of Correlated Sub-Queries, sub-query would be repeatedly executed for every row 
+ SELECTed by OUTER query.
+********************************************************************
+-Write a query to list employees earning salary greater than average salary of their own dept.
+
+mysql> SELECT e1.empno,e1.ename,e1.sal,e1.deptno
+    -> FROM emp e1
+    -> WHERE e1.sal > (SELECT avg(e2.sal) FROM emp e2
+    ->                 WHERE e2.deptno=e1.deptno);
++-------+-------+---------+--------+
+| empno | ename | sal     | deptno |
++-------+-------+---------+--------+
+|  7499 | ALLEN | 1600.00 |     30 |
+|  7566 | JONES | 2975.00 |     20 |
+|  7698 | BLAKE | 2850.00 |     30 |
+|  7788 | SCOTT | 3000.00 |     20 |
+|  7839 | KING  | 5000.00 |     10 |
+|  7902 | FORD  | 3000.00 |     20 |
++-------+-------+---------+--------+
+6 rows in set (0.00 sec)
+----------------------------------------------------
+-List employees with highest salary in each JOB.
+
+mysql> SELECT empno,ename,job,sal
+    -> FROM emp
+    -> WHERE (job,sal) IN (SELECT job,max(sal) FROM emp
+    ->                     GROUP BY job);
++-------+--------+-----------+---------+
+| empno | ename  | job       | sal     |
++-------+--------+-----------+---------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |
++-------+--------+-----------+---------+
+6 rows in set (0.04 sec)
+
+mysql> SELECT e1.empno,e1.ename,e1.job,e1.sal
+    -> FROM emp e1
+    -> WHERE e1.sal = (SELECT max(e2.sal) FROM emp e2
+    ->                 WHERE e2.job=e1.job);
++-------+--------+-----------+---------+
+| empno | ename  | job       | sal     |
++-------+--------+-----------+---------+
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |
+|  7566 | JONES  | MANAGER   | 2975.00 |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |
+|  7839 | KING   | PRESIDENT | 5000.00 |
+|  7902 | FORD   | ANALYST   | 3000.00 |
+|  7934 | MILLER | CLERK     | 1300.00 |
++-------+--------+-----------+---------+
+6 rows in set (0.00 sec)
+
+EXISTS & NOT EXISTS operators:
+------------------------------
+-These are of BOOLEAN type.
+
+EXISTS operator:
+----------------
+-If sub-query is successful, EXISTS returns TRUE. If EXISTS returns TRUE, outer query would 
+ display the record else discards.
+
+Ex: To list emloyees who are managing atleast 1 employee.
+
+mysql> SELECT e1.empno,e1.ename
+    -> FROM emp e1
+    -> WHERE EXISTS(SELECT 1 FROM emp e2
+    ->              WHERE e2.mgr=e1.empno);
++-------+-------+
+| empno | ename |
++-------+-------+
+|  7566 | JONES |
+|  7698 | BLAKE |
+|  7782 | CLARK |
+|  7788 | SCOTT |
+|  7839 | KING  |
+|  7902 | FORD  |
++-------+-------+
+6 rows in set (0.00 sec)
+
+Explanation 
+-----------
+For first row:
+---------------
+	7369     SMITH
+SELECT e1.empno,e1.ename  --row discarded
+FROM emp e1
+WHERE EXISTS(SELECT 1 FROM emp e2
+             WHERE e2.mgr=e1.empno);
+	(F)		 = 7369  --SUB-QUERY FAILS
+		   
+...
+...
+
+For fourth row:
+---------------
+	7566     JONES
+SELECT e1.empno,e1.ename  --row would be displayed
+FROM emp e1
+WHERE EXISTS(SELECT 1 FROM emp e2
+             WHERE e2.mgr=e1.empno);
+	(T)		 = 7566 --2 rows returned
+----------------------------
+-Write a query to list department details in which no employees are working.
+
+mysql> SELECT d.deptno,d.dname,d.loc
+    -> FROM dept d
+    -> WHERE NOT EXISTS(SELECT * FROM emp e
+    ->                  WHERE e.deptno=d.deptno);
++--------+------------+--------+
+| deptno | dname      | loc    |
++--------+------------+--------+
+|     40 | OPERATIONS | BOSTON |
++--------+------------+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT deptno,dname,loc
+    -> FROM dept
+    -> WHERE deptno NOT IN(SELECT deptno FROM emp);
++--------+------------+--------+
+| deptno | dname      | loc    |
++--------+------------+--------+
+|     40 | OPERATIONS | BOSTON |
++--------+------------+--------+
+1 row in set (0.00 sec)
+**********************************************************************************************
+VIEWS:
+------
+What is a View?
+ *View is a Virtual Table.
+ *A View is another indirect method of accessing data in the table.
+
+What is Virtual Table?
+ *It is a table which appears to be existing but physically it would not be existing.
+
+Then how it is stored in Database?
+ *A view is stored as SELECT statement only.
+ *A view is derived using existing table or another view which is referred as base table for the
+  view.
+
+Does view has its own data?
+ *No. It always refers to data of underlying base table.
+
+What is use of Views?
+ *Restricting access to only certain rows and columns in the table.
+ *Using views you can access only certain portion of data in the table.
+ *To make complex queries very simple.
+
+Types of Views:
+---------------
+Simple Views: These are derived from single table and does not contain single or multirow functions
+
+Complex Views: These might be derived from multiple tables or may contain sinlge or multirow                functions.
+
+Simple View:
+------------
+mysql> CREATE VIEW emp10view
+    -> AS
+    -> SELECT empno,ename,job,deptno
+    -> FROM emp
+    -> WHERE deptno=10 WITH CHECK OPTION;
+Query OK, 0 rows affected (0.24 sec)
+ 
+mysql> DESC emp10view;
++--------+------------------+------+-----+---------+-------+
+| Field  | Type             | Null | Key | Default | Extra |
++--------+------------------+------+-----+---------+-------+
+| empno  | int(10) unsigned | NO   |     | NULL    |       |
+| ename  | varchar(10)      | YES  |     | NULL    |       |
+| job    | varchar(12)      | YES  |     | NULL    |       |
+| deptno | tinyint(4)       | YES  |     | NULL    |       |
++--------+------------------+------+-----+---------+-------+
+4 rows in set (0.11 sec)
+
+mysql> SELECT * FROM emp10view;
++-------+--------+-----------+--------+
+| empno | ename  | job       | deptno |
++-------+--------+-----------+--------+
+|  7782 | CLARK  | MANAGER   |     10 |
+|  7839 | KING   | PRESIDENT |     10 |
+|  7934 | MILLER | CLERK     |     10 |
++-------+--------+-----------+--------+
+3 rows in set (0.00 sec)
+
+-Can we insert a row into above view?
+ *Yes. It writes to BASE table.
+
+mysql> INSERT INTO emp10view VALUES(8888,'SACHIN','BATSMAN',10);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> SELECT * FROM emp10view;
++-------+--------+-----------+--------+
+| empno | ename  | job       | deptno |
++-------+--------+-----------+--------+
+|  7782 | CLARK  | MANAGER   |     10 |
+|  7839 | KING   | PRESIDENT |     10 |
+|  7934 | MILLER | CLERK     |     10 |
+|  8888 | SACHIN | BATSMAN   |     10 |
++-------+--------+-----------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
+|  8888 | SACHIN | BATSMAN   | NULL | NULL       |    NULL |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+15 rows in set (0.00 sec)
+
+-WITH CHECK OPTION would enforce WHERE condition
+
+mysql> INSERT INTO emp10view VALUES(8989,'LAXMAN','MANAGER',20);
+ERROR 1369 (44000): CHECK OPTION failed `company`.`emp10view`
+
+mysql> DELETE FROM emp10view WHERE empno=8888;
+Query OK, 1 row affected (0.06 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-07-13 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-07-13 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+14 rows in set (0.00 sec)
+****************************************************
+-Complex Views:
+---------------
+mysql> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.dname,d.loc
+    -> FROM emp e INNER JOIN dept d
+    -> ON e.deptno=d.deptno;
++-------+--------+-----------+---------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 | RESEARCH   | DALLAS   |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 | ACCOUNTING | NEW YORK |
++-------+--------+-----------+---------+--------+------------+----------+
+14 rows in set (0.05 sec)
+
+Example: JOIN view
+
+mysql> CREATE VIEW empdept
+    -> AS
+    -> SELECT e.empno,e.ename,e.job,e.sal,e.deptno,d.dname,d.loc
+    -> FROM emp e INNER JOIN dept d
+    -> ON e.deptno=d.deptno;
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> DESC empdept;
++--------+------------------+------+-----+---------+-------+
+| Field  | Type             | Null | Key | Default | Extra |
++--------+------------------+------+-----+---------+-------+
+| empno  | int(10) unsigned | NO   |     | NULL    |       |
+| ename  | varchar(10)      | YES  |     | NULL    |       |
+| job    | varchar(12)      | YES  |     | NULL    |       |
+| sal    | float(9,2)       | YES  |     | NULL    |       |
+| deptno | tinyint(4)       | YES  |     | NULL    |       |
+| dname  | varchar(12)      | YES  |     | NULL    |       |
+| loc    | varchar(11)      | YES  |     | NULL    |       |
++--------+------------------+------+-----+---------+-------+
+7 rows in set (0.01 sec)
+
+mysql> SELECT * FROM empdept;
++-------+--------+-----------+---------+--------+------------+----------+
+| empno | ename  | job       | sal     | deptno | dname      | loc      |
++-------+--------+-----------+---------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     |  800.00 |     20 | RESEARCH   | DALLAS   |
+|  7499 | ALLEN  | SALESMAN  | 1600.00 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | SALESMAN  | 1250.00 |     30 | SALES      | CHICAGO  |
+|  7566 | JONES  | MANAGER   | 2975.00 |     20 | RESEARCH   | DALLAS   |
+|  7654 | MARTIN | SALESMAN  | 1250.00 |     30 | SALES      | CHICAGO  |
+|  7698 | BLAKE  | MANAGER   | 2850.00 |     30 | SALES      | CHICAGO  |
+|  7782 | CLARK  | MANAGER   | 2450.00 |     10 | ACCOUNTING | NEW YORK |
+|  7788 | SCOTT  | ANALYST   | 3000.00 |     20 | RESEARCH   | DALLAS   |
+|  7839 | KING   | PRESIDENT | 5000.00 |     10 | ACCOUNTING | NEW YORK |
+|  7844 | TURNER | SALESMAN  | 1500.00 |     30 | SALES      | CHICAGO  |
+|  7876 | ADAMS  | CLERK     | 1100.00 |     20 | RESEARCH   | DALLAS   |
+|  7900 | JAMES  | CLERK     |  950.00 |     30 | SALES      | CHICAGO  |
+|  7902 | FORD   | ANALYST   | 3000.00 |     20 | RESEARCH   | DALLAS   |
+|  7934 | MILLER | CLERK     | 1300.00 |     10 | ACCOUNTING | NEW YORK |
++-------+--------+-----------+---------+--------+------------+----------+
+14 rows in set (0.00 sec)
+
+-Try INSERTing record into above view
+
+mysql> INSERT INTO empdept
+    -> VALUES(8888,'SACHIN','BATSMAN',4500,50,'SPORTS','SAN JOSE');
+ERROR 1394 (HY000): Can not insert into join view 'company.empdept' without fields list
+mysql> INSERT INTO empdept(empno,ename,job,sal,deptno,dname,loc)
+    -> VALUES(8888,'SACHIN','BATSMAN',4500,50,'SPORTS','SAN JOSE');
+ERROR 1393 (HY000): Can not modify more than one base table through a join view 'company.empdept'
+
+-Can we add record into above view?
+ *No and Yes.
+ *Directly it is not possible, but indirectly using INSTEAD OF Triggers we can INSERT.
+********************************************************************************************
+-Create a view which displays all aggregates(min,max,avg,sum) of salary for each dept.
+
+mysql> CREATE OR REPLACE VIEW empaggview
+    -> (deptno,minsal,avgsal,maxsal,totalsal,noofemps)
+    -> AS
+    -> SELECT deptno,min(sal),avg(sal),max(sal),sum(sal),count(sal)
+    -> FROM emp
+    -> GROUP BY deptno;
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> DESC empaggview;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| deptno   | tinyint(4)   | YES  |     | NULL    |       |
+| minsal   | float(9,2)   | YES  |     | NULL    |       |
+| avgsal   | double(13,6) | YES  |     | NULL    |       |
+| maxsal   | float(9,2)   | YES  |     | NULL    |       |
+| totalsal | double(19,2) | YES  |     | NULL    |       |
+| noofemps | bigint(21)   | NO   |     | 0       |       |
++----------+--------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM empaggview;
++--------+---------+-------------+---------+----------+----------+
+| deptno | minsal  | avgsal      | maxsal  | totalsal | noofemps |
++--------+---------+-------------+---------+----------+----------+
+|     10 | 1300.00 | 2916.666667 | 5000.00 |  8750.00 |        3 |
+|     20 |  800.00 | 2175.000000 | 3000.00 | 10875.00 |        5 |
+|     30 |  950.00 | 1566.666667 | 2850.00 |  9400.00 |        6 |
++--------+---------+-------------+---------+----------+----------+
+3 rows in set (0.00 sec)
+
+mysql> DROP VIEW <view_name>;
+***********************************************************************************************
+TRANSACTIONS
+------------
+-What is a transaction?
+ *Transaction is a one or more changes performed on database tables.
+
+-Types of Transaction
+ *Changes to Data - DML transaction
+ *Changes to Structure - DDL transaction
+
+-In MySQL by default AUTOCOMMIT is set to ON. Changes would be implicitly committed.
+-To begin transaction explicitly use "START TRANSACTION" statement.
+
+TCL Commands:
+-------------
+COMMIT : To save changes peformed in a transaction
+ROLLBACK : To undo changes performed in a transaction
+SAVEPOINT: To divide a transaction so that you can perform partial rollback.
+	 : All savepoints are LOST when transaction ENDs
+
+COMMIT & ROLLBACK would end transaction.
+-------------------------------------------------------------------------------------------------
+	DDL transaction				|		DML Transaction
+-------------------------------------------------------------------------------------------------
+-Consists of only 1 DDL statement. Ends		| -May contain any number of DML statements which
+ transaction					|  is treated as single logical unit of work
+-------------------------------------------------------------------------------------------------
+-Will implicitly commit. No ROLLBACK is possible| -Needs to be explicitly committed.
+						| -Committed transactions cannot be rolled back
+-------------------------------------------------------------------------------------------------
+mysql> use happyminds;
+Database changed
+mysql> CREATE TABLE cricket(
+    ->  name varchar(12));
+Query OK, 0 rows affected (0.43 sec)
+
+mysql> COMMIT;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('SACHIN');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('DRAVID');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> DELETE FROM cricket WHERE name='SACHIN';
+Query OK, 1 row affected (0.00 sec)
+
+mysql> ROLLBACK;
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> SELECT * FROM cricket;
+Empty set (0.00 sec)
+---------------------------------------------------------------------
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('SACHIN');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('DRAVID');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> ALTER TABLE cricket
+    -> MODIFY COLUMN name varchar(15);
+Query OK, 0 rows affected (0.57 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+-When you execute any DDL statement, it would implicitly commit DML changes if any, COMMITs even
+ DDL change and ENDs the transaction.
+
+mysql> DELETE FROM cricket WHERE name='SACHIN';
+Query OK, 1 row affected (0.04 sec)
+
+mysql> ROLLBACK;   --ROLLBACK has not effect
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM cricket;
++--------+
+| name   |
++--------+
+| DRAVID |
++--------+
+1 row in set (0.00 sec)
+
+mysql> DESC cricket;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| name  | varchar(15) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+1 row in set (0.00 sec)
+**************************************************************************************
+SAVEPOINTS:
+-----------
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('SACHIN');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SAVEPOINT ins1;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO cricket VALUES('KOHLI');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SAVEPOINT ins2;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UPDATE cricket SET name='RAHUL' WHERE name='DRAVID';
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SAVEPOINT upd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELETE FROM cricket;
+Query OK, 3 rows affected (0.00 sec)
+
+mysql> SELECT * FROM cricket;
+Empty set (0.00 sec)
+
+mysql> ROLLBACK TO upd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM cricket;
++--------+
+| name   |
++--------+
+| RAHUL  |
+| SACHIN |
+| KOHLI  |
++--------+
+3 rows in set (0.00 sec)
+
+mysql> ROLLBACK TO ins2;
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> SELECT * FROM cricket;
++--------+
+| name   |
++--------+
+| DRAVID |
+| SACHIN |
+| KOHLI  |
++--------+
+3 rows in set (0.00 sec)
+
+mysql> COMMIT;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SELECT * FROM cricket;
++--------+
+| name   |
++--------+
+| DRAVID |
+| SACHIN |
+| KOHLI  |
++--------+
+3 rows in set (0.00 sec)
+***********************************************************************************************
+Read Consistency:
+-----------------
+Session:1
+---------
+mysql> use happyminds;
+Database changed
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | NULL     |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t1
+mysql> UPDATE dept SET loc='BOSTON'
+    -> WHERE deptno=40;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t3
+mysql> COMMIT;
+Query OK, 0 rows affected (0.07 sec)
+------------------------------------------------
+Session:2
+---------
+mysql> use happyminds;
+Database changed
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | NULL     |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t2
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | NULL     |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> # At time t4
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | NULL     |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> # At time t5
+mysql> COMMIT;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+******************************************************************************************
+Implicit Locking:
+-----------------
+-When one or more changes(UPDATE/DELETE) is performed on rows of the table, those rows would be
+ implicitly locked.
+-No changes can be peformed on those LOCKED rows in any other sessions.
+-Locks are implicitly released when transaction ENDs.
+
+DEMO:
+-----
+Session:1
+---------
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t1
+mysql>
+mysql> UPDATE dept SET loc='MUMBAI'
+    -> WHERE deptno=30;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t3
+mysql> COMMIT;
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | MUMBAI   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     30 | MARKETING  | MUMBAI   |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+----------------------------------------------------------
+Session:2
+---------
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t2
+mysql> UPDATE dept SET dname='MARKETING'
+    -> WHERE deptno=30;
+Query OK, 1 row affected (48.70 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t4
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     30 | MARKETING  | MUMBAI   |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> # At time t5
+mysql> COMMIT;
+Query OK, 0 rows affected (0.05 sec)
+***********************************************************************************************
+DEADLOCKS:
+----------
+-Deadlocks occur when one or more transactions are trying to acquire locks on the resources which
+ are already locked by their counter/opposite transactions.
+
+-Deadlocks are automatically detected by MySQL and resolves deadlock by rolling back all the 
+ actions of one of the transactions.
+
+DEMO:
+-----
+SESSION:1
+---------
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     30 | MARKETING  | MUMBAI   |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t1
+mysql> UPDATE dept SET dname='SALES'
+    -> WHERE deptno=30;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t3
+mysql> UPDATE dept SET dname='HR'
+    -> WHERE deptno=40;
+Query OK, 1 row affected (44.78 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t5
+mysql> COMMIT;
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | HR         | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | MUMBAI   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+--------------------------------------------------------
+SESSION:2
+----------
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     30 | MARKETING  | MUMBAI   |
+|     40 | OPERATIONS | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> # At time t2
+mysql> UPDATE dept SET loc='CHICAGO'
+    -> WHERE deptno=40;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> # At time t4
+mysql> UPDATE dept SET loc='BLORE'
+    -> WHERE deptno=30;
+ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+
+mysql> # At time t6
+mysql> COMMIT;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     50 | NULL       | SAN JOSE |
+|     10 | ACCOUNTING | NEW YORK |
+|     40 | HR         | BOSTON   |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | MUMBAI   |
++--------+------------+----------+
+5 rows in set (0.00 sec)
+###############################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
